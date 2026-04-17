@@ -1,0 +1,38 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+
+# =========================
+# 1️⃣ Force HTTPS
+# =========================
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# =========================
+# 2️⃣ Allow all assets to load normally
+# =========================
+RewriteRule ^(images|css|js|assets|uploads|fonts)/ - [L,NC]
+RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|pdf|mp4)$ [NC]
+RewriteRule ^ - [L]
+
+# =========================
+# 3️⃣ Remove trailing slash from URLs (if not a folder)
+# =========================
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [L,R=301]
+
+# =========================
+# 4️⃣ Blog article routing
+# =========================
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^newsdetail/([a-zA-Z0-9-]+)$ newsdetail/index.php?slug=$1 [L,QSA]
+
+# =========================
+# 5️⃣ Generic routing for all other URLs
+# =========================
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)(?:/([^/]*))?$ index.php?url=$1&puid=$2 [QSA,L]
+
+</IfModule>

@@ -1,0 +1,17 @@
+# Serve video files with correct MIME types
+AddType video/mp4 .mp4
+AddType video/webm .webm
+AddType video/ogg .ogg
+AddType video/quicktime .mov
+AddType video/x-msvideo .avi
+
+# Allow cross-origin access for video files
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Accept-Ranges "bytes"
+</IfModule>
+
+# Enable byte-range requests (needed for video seeking/playback)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
