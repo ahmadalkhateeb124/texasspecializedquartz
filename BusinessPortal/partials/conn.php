@@ -1,20 +1,21 @@
 <?php
-$host = "localhost"; // استخدام IP بدلاً من localhost لتجنب مشاكل socket
-$port = 3306;
-$dbname = "u557236614_gr";
-$username = "u557236614_gr";
-$password = "C#$>x/Vg!3Pr";
+
+/**
+ * Legacy connection bootstrapper.
+ * Delegates to config/database.php so credentials live in one place.
+ *
+ * Keep this file for backward compatibility — existing code still does
+ *   require_once __DIR__ . '/../partials/conn.php';
+ */
+
+$dbConfig = require __DIR__ . '/../config/database.php';
 
 try {
     $pdo = new PDO(
-        "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password,
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false,
-        ]
+        "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['dbname']};charset={$dbConfig['charset']}",
+        $dbConfig['username'],
+        $dbConfig['password'],
+        $dbConfig['options']
     );
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage());

@@ -1,0 +1,113 @@
+    /* Container */
+    .sales-offices {
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+
+    /* Product Card Modern */
+    .product-card-modern {
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.08);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .product-card-modern:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Product Image */
+    .product-image-modern {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image-modern img {
+        width: 100%;
+        height: 230px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .product-card-modern:hover .product-image-modern img {
+        transform: scale(1.05);
+    }
+
+    /* Overlay Button */
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+    }
+
+    .product-card-modern:hover .overlay {
+        opacity: 1;
+    }
+
+    .btn-view {
+        background-color: #ff7f50;
+        color: #fff;
+        padding: 8px 18px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s ease;
+    }
+
+    .btn-view:hover {
+        background-color: #ff5722;
+    }
+
+    /* Product Body */
+    .product-body-modern {
+        padding: 15px 20px;
+    }
+
+    .product-title-modern {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .product-info-modern {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .product-info-modern span {
+        background: #f3f3f3;
+        padding: 4px 8px;
+        border-radius: 8px;
+    }
+
+
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .product-image-modern img {
+            height: 200px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .product-image-modern img {
+            height: 180px;
+        }
+    }

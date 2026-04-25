@@ -1,10 +1,10 @@
 <?php
 // Start session only if not already started
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    require_once __DIR__ . '/../src/session.php';
 }
 // Include database connection
-require_once __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../auth/auth-check.php';
 // Enable all error reporting
 error_reporting(E_ALL);

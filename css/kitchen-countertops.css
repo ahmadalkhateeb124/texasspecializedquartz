@@ -1,0 +1,242 @@
+/* ═══ KITCHEN COUNTERTOPS — polished layout ═══ */
+
+body.tx-theme section.property-customization,
+body.tx-theme section.about,
+body.tx-theme section.gallery,
+body.tx-theme section.faq,
+body.tx-theme section[class*="kitchen"] { padding: 90px 0; background: #ffffff; }
+
+/* Our Stone Suppliers — DARK granite-lit */
+body.tx-theme section.property-customization {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(176,141,87,.1), transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(176,141,87,.08), transparent 60%),
+        linear-gradient(180deg, #121210, #0a0a09) !important;
+    color: #e8e3da;
+    padding: 110px 0 !important;
+    position: relative;
+    overflow: hidden;
+}
+body.tx-theme section.property-customization .container { max-width: 1160px; }
+body.tx-theme section.property-customization .row { justify-content: center; }
+body.tx-theme section.property-customization .col-12 {
+    text-align: center;
+    margin-bottom: 54px;
+}
+
+/* Section number — eyebrow on dark */
+body.tx-theme .section-number {
+    display: inline-block;
+    font-family: var(--tx-sans);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--tx-gold);
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding: 0 42px;
+    position: relative;
+}
+body.tx-theme .section-number::before,
+body.tx-theme .section-number::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 30px; height: 1px;
+    background: var(--tx-gold);
+}
+body.tx-theme .section-number::before { left: 0; }
+body.tx-theme .section-number::after  { right: 0; }
+
+/* Headings on dark */
+body.tx-theme .property-customization h2 {
+    font-family: var(--tx-serif);
+    font-weight: 800;
+    color: #fafaf7;
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.12;
+    margin: 0 auto 16px;
+    letter-spacing: -.02em;
+    max-width: 24ch;
+}
+body.tx-theme .property-customization h2 span { color: var(--tx-gold); }
+body.tx-theme .property-customization h3 {
+    font-family: var(--tx-sans);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--tx-gold);
+    letter-spacing: .02em;
+    margin: 0 auto 18px;
+    text-transform: none;
+}
+body.tx-theme .property-customization p.lead {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #b8b2a5;
+    max-width: 660px;
+    margin: 0 auto 0;
+}
+
+/* Vendor cards — light on dark */
+body.tx-theme section.about h2,
+body.tx-theme section.gallery h2,
+body.tx-theme section.faq h2 {
+    font-family: var(--tx-serif);
+    font-weight: 800;
+    color: #1a1814;
+    font-size: clamp(26px, 3vw, 40px);
+    line-height: 1.15;
+    margin-bottom: 14px;
+    letter-spacing: -.015em;
+}
+body.tx-theme .property-customization [class*="col-lg-2"] { margin-bottom: 14px; }
+body.tx-theme .property-customization figure {
+    background: #ffffff;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 22px 14px;
+    text-align: center;
+    height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    transition: border-color .25s, background .25s;
+}
+body.tx-theme .property-customization figure:hover {
+    border-color: var(--tx-gold);
+    background: #ffffff;
+}
+body.tx-theme .property-customization figure img {
+    max-width: 100px;
+    max-height: 50px;
+    width: auto;
+    height: auto;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+body.tx-theme .property-customization figcaption {
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #1a1814;
+}
+
+/* Material cards */
+body.tx-theme .material-card {
+    background: #fff;
+    border: 1px solid #e8e2d9;
+    padding: 28px;
+    border-radius: 14px;
+    height: 100%;
+    position: relative;
+    transition: border-color .25s;
+}
+body.tx-theme .material-card:hover { border-color: #8b6f4e; }
+body.tx-theme .material-card.featured { border-color: #8b6f4e; }
+body.tx-theme .material-card h3 {
+    font-family: var(--tx-serif);
+    font-weight: 700;
+    color: #1a1814;
+    font-size: 20px;
+    margin: 14px 0 8px;
+}
+body.tx-theme .popular-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: #8b6f4e;
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+}
+body.tx-theme .material-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 4px;
+}
+body.tx-theme .price-range {
+    font-family: var(--tx-serif);
+    font-weight: 800;
+    color: #8b6f4e;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+/* Service cards */
+body.tx-theme .service-card {
+    background: #fff;
+    border: 1px solid #e8e2d9;
+    padding: 26px;
+    border-radius: 12px;
+    height: 100%;
+    margin-bottom: 18px;
+    transition: border-color .25s;
+}
+body.tx-theme .service-card:hover { border-color: #8b6f4e; }
+body.tx-theme .service-card h3,
+body.tx-theme .service-card h4 {
+    font-family: var(--tx-serif);
+    font-weight: 700;
+    color: #1a1814;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* FAQ items (inline style on this page) */
+body.tx-theme .faq-item {
+    background: #fff;
+    border: 1px solid #e8e2d9;
+    padding: 22px 26px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    box-shadow: none;
+}
+body.tx-theme .faq-item h3 {
+    font-family: var(--tx-serif);
+    font-weight: 700;
+    color: #1a1814;
+    font-size: 17px;
+    margin-bottom: 10px;
+    letter-spacing: -.005em;
+}
+body.tx-theme .faq-item p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4a4a4a;
+    margin: 0;
+}
+
+/* Breadcrumb */
+body.tx-theme .breadcrumb-nav {
+    background: #fbf7ee;
+    padding: 14px 0;
+    border-bottom: 1px solid #eee5d4;
+}
+body.tx-theme .breadcrumb {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    letter-spacing: .06em;
+    font-family: var(--tx-sans);
+}
+body.tx-theme .breadcrumb a { color: #5a524a; }
+body.tx-theme .breadcrumb a:hover { color: #8b6f4e; }
+
+@media (max-width: 575px) {
+    body.tx-theme section.property-customization,
+    body.tx-theme section.about,
+    body.tx-theme section.gallery,
+    body.tx-theme section.faq { padding: 50px 0; }
+    body.tx-theme .material-card,
+    body.tx-theme .service-card,
+    body.tx-theme .faq-item { padding: 20px; }
+}

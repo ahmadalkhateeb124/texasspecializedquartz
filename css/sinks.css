@@ -1,0 +1,235 @@
+        *{box-sizing:border-box;margin:0;padding:0;}
+
+
+        /* ── HERO ── */
+        .stone-hero{
+            max-width:1200px;
+            margin:0 auto;
+            padding:2.5rem 1.5rem 1rem;
+        }
+        .stone-hero h1{
+            font-family:'Fraunces', Georgia, 'Times New Roman', serif;
+            font-size:clamp(38px,4vw,52px);
+            font-weight:400;
+            line-height:1.25;
+            color:#1a1814;
+            margin-bottom:1rem;
+        }
+        .stone-hero h1 em{
+            color:#999999;
+            font-weight:700;
+        }
+        .stone-hero p{
+            font-size:18px;
+            color:#5c5650;
+            max-width:680px;
+            line-height:1.7;
+            margin-bottom:.4rem;
+        }
+        .phone-link{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            margin-top:1rem;
+            font-size:13px;
+            color:#5c5650;
+        }
+        .phone-link a{
+            color:#999999;
+            font-weight:600;
+            text-decoration:none;
+        }
+        .phone-link a:hover{text-decoration:underline;}
+
+        /* ── FEATURES STRIP ── */
+        .features-strip{
+            max-width:1200px;
+            margin:1.5rem auto 0;
+            padding:0 1.5rem;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:10px;
+        }
+        .feat-item{
+            background: rgb(111 111 111 / 0.11);
+            border-radius:10px;
+            padding:.85rem 1rem;
+        }
+        .feat-label{
+            font-size:10px;
+            color:#8c877f;
+            text-transform:uppercase;
+            letter-spacing:.7px;
+            margin-bottom:4px;
+        }
+        .feat-val{
+            font-size:13px;
+            font-weight:600;
+            color:#1a1814;
+        }
+
+        /* ── FILTER BAR ── */
+        .filter-bar{
+            max-width:1200px;
+            margin:2rem auto 0;
+            padding:0 1.5rem;
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+        .filter-btn{
+            padding:8px 20px;
+            border-radius:50px;
+            border:1.5px solid #d8d2c8;
+            background:transparent;
+            font-family:'Inter', sans-serif;
+            font-size:13px;
+            font-weight:500;
+            color:#5c5650;
+            cursor:pointer;
+            transition:all .25s ease;
+            white-space:nowrap;
+        }
+        .filter-btn:hover{
+            border-color:#999999;
+            color:#999999;
+        }
+        .filter-btn.active{
+            background:#999999;
+            border-color:#999999;
+            color:#fff;
+        }
+
+        /* ── CATALOG CONTAINER ── */
+        .catalog{
+            max-width:1200px;
+            margin:0 auto;
+            padding:0 1.5rem 3rem;
+        }
+
+        /* ── SECTION ── */
+        .section-block{
+            margin-top:2rem;
+        }
+        .section-header{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:.35rem;
+        }
+        .section-header h2{
+            font-family:'Fraunces', Georgia, 'Times New Roman', serif;
+            font-size:22px;
+            font-weight:400;
+            color:#1a1814;
+        }
+        .section-divider{
+            height:1px;
+            background:#e8e2d9;
+            margin-bottom:1.25rem;
+        }
+
+        /* ── SUB SECTION ── */
+        .sub-header{
+            display:flex;
+            align-items:center;
+            gap:8px;
+            margin:1.5rem 0 1rem;
+        }
+        .sub-header::before{
+            content:'';
+            width:3px;
+            height:16px;
+            background:#999999;
+            border-radius:2px;
+            flex-shrink:0;
+        }
+        .sub-header h3{
+            font-size:20px;
+            font-weight:600;
+            color:#1a1814;
+        }
+
+        /* ── GRID ── */
+        .card-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:12px;
+        }
+
+        /* ── CARD ── */
+        .stone-card{
+            background:#fff;
+            border:1px solid #e8e2d9;
+            border-radius:10px;
+            overflow:hidden;
+            transition:border-color .2s, box-shadow .25s, transform .25s;
+            cursor:pointer;
+        }
+        .stone-card:hover{
+            border-color:#c4b89a;
+            box-shadow:0 6px 24px rgba(0,0,0,.08);
+            transform:translateY(-2px);
+        }
+        .img-wrap{
+            position:relative;
+            aspect-ratio:4/4;
+            background:#ffffff;
+            overflow:hidden;
+        }
+        .img-wrap img{
+            width:100%;
+            height:100%;
+            object-fit:contain;
+            display:block;
+            padding:6px;
+            transition:transform .35s ease;
+        }
+        .stone-card:hover .img-wrap img{
+            transform:scale(1.05);
+        }
+        .img-placeholder{
+            width:100%;
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#ffffff;
+        }
+        .img-placeholder svg{opacity:.15;}
+        .stone-info{
+            padding:.6rem .75rem .7rem;
+            border-top:1px solid #f0ece6;
+        }
+        .stone-info h4{
+            font-size:16px;
+            font-weight:600;
+            color:#1a1814;
+            line-height:1.35;
+            margin:0;
+        }
+
+        /* ── ANIMATIONS ── */
+        .section-block{
+            animation:fadeUp .5s ease both;
+        }
+        .section-block.hidden{
+            display:none;
+        }
+        @keyframes fadeUp{
+            from{opacity:0;transform:translateY(16px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:900px){
+            .card-grid{grid-template-columns:repeat(3,1fr);}
+        }
+        @media(max-width:640px){
+            .card-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+            .features-strip{grid-template-columns:1fr 1fr;}
+            .stone-hero h1{font-size:34px;}
+        }
+        @media(max-width:400px){
+            .features-strip{grid-template-columns:1fr;}
+        }

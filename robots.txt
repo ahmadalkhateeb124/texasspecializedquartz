@@ -1,4 +1,13 @@
 User-agent: *
-Disallow:
+Allow: /
 
+# Block admin / internal areas
+Disallow: /BusinessPortal/
+Disallow: /PHPMail/
+Disallow: /auth/
+Disallow: /uploads/
+Disallow: /inc/
+Disallow: /php/
+
+# Feeds & sitemap
 Sitemap: https://texasspecializedquartz.com/sitemap.xml

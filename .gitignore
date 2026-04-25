@@ -1,2 +1,31 @@
+# Media uploads
 *.mp4
 *.mov
+
+# Secrets — never commit credentials
+BusinessPortal/config/database.credentials.php
+BusinessPortal/config/mail.credentials.php
+.env
+.env.*
+!.env.example
+
+# Local PHP error logs
+logs/*.log
+logs/*.txt
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Build artifacts
+node_modules/
+vendor/
+*.tmp
+*.bak
+*.old
+*.orig

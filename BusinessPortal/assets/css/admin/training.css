@@ -1,0 +1,80 @@
+/* admin/training.css */
+
+.video-thumb {
+    width: 160px;
+    height: 96px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #111;
+    flex-shrink: 0;
+}
+
+.video-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.video-grid-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-surface);
+    transition: var(--t);
+}
+
+.video-grid-card video {
+    width: 100%;
+    height: 200px;
+    display: block;
+    background: #111;
+}
+
+.video-grid-body {
+    padding: 1.25rem;
+}
+
+.video-grid-title {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 1rem;
+    margin-bottom: .75rem;
+    line-height: 1.4;
+}
+
+.video-grid-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    font-size: .8rem;
+    color: var(--color-text-sub);
+    padding-top: .75rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.video-grid-meta i {
+    font-size: .9rem;
+    vertical-align: middle;
+}
+
+.view-toggle {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.view-toggle .btn {
+    border: none;
+    border-radius: 0;
+    padding: .35rem .75rem;
+    font-size: .85rem;
+    color: var(--color-text-sub);
+    background: transparent;
+}
+
+.view-toggle .btn.active {
+    background: var(--color-primary);
+    color: #fff;
+}

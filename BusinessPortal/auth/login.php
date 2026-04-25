@@ -1,113 +1,148 @@
 <?php
-session_start();
-include '../partials/conn.php';
+/**
+ * auth/login.php — Credential handler with CSRF + rate limiting.
+ */
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/db.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = trim($_POST['email']);
-    $password = trim($_POST['password']);
-    $remember = isset($_POST['rememberMe']);
-    $account_type = $_POST['account_type'] ?? 'user'; // user أو company
-
-    // التحقق من البيانات المدخلة
-    if (empty($email) || empty($password)) {
-        $_SESSION['login_error'] = "Please enter both email and password";
-        header("Location: ../auth-login-minimal.php");
-        exit;
-    }
-
-    if ($account_type === 'user') {
-        // تسجيل الدخول كـ User
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['fullname'] = $user['fullname'];
-            $_SESSION['user_type'] = 'user';
-            $_SESSION['logged_in'] = true;
-
-            if ($remember) {
-                $token = bin2hex(random_bytes(16));
-                setcookie('remember_token', $token, time() + (86400 * 30), "/");
-                setcookie('user_id', $user['id'], time() + (86400 * 30), "/");
-                setcookie('user_type', 'user', time() + (86400 * 30), "/");
-
-                $update = $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?");
-                $update->execute([$token, $user['id']]);
-            }
-
-            header("Location: ../index.php");
-            exit;
-        } else {
-            $_SESSION['login_error'] = "Incorrect email or password";
-            header("Location: ../auth-login-minimal.php");
-            exit;
-        }
-
-    }
-
-    elseif ($account_type === 'company') {
-
-        $stmt = $pdo->prepare("
-        SELECT id, company_id, name, email, password, status
-        FROM accounts
-        WHERE email = ?
-        LIMIT 1
-    ");
-        $stmt->execute([$email]);
-        $account = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // تحقق من وجود الحساب
-        if (!$account) {
-            $_SESSION['login_error'] = "Incorrect email or password";
-            header("Location: ../auth-login-minimal.php");
-            exit;
-        }
-
-        // تحقق من حالة الحساب
-        if ($account['status'] !== 'Active') {
-
-            if ($account['status'] === 'Inactive') {
-                $_SESSION['login_error'] = "Your account is inactive. Please contact support. Cs@TexasSpecializedQuartz.com";
-            } elseif ($account['status'] === 'Blacklisted') {
-                $_SESSION['login_error'] = "Your account is Blacklisted. Please contact support. Cs@TexasSpecializedQuartz.com";
-            } else {
-                $_SESSION['login_error'] = "Account access denied.";
-            }
-
-            header("Location: ../auth-login-minimal.php");
-            exit;
-        }
-
-        // تحقق من كلمة المرور
-        if (!password_verify($password, $account['password'])) {
-            $_SESSION['login_error'] = "Incorrect email or password";
-            header("Location: ../auth-login-minimal.php");
-            exit;
-        }
-
-        // ✅ تسجيل الدخول
-        $_SESSION['account_id']   = $account['id'];
-        $_SESSION['company_id']   = $account['company_id'];
-        $_SESSION['email']        = $account['email'];
-        $_SESSION['account_name'] = $account['name'];
-        $_SESSION['user_type']    = 'account';
-        $_SESSION['logged_in']    = true;
-
-        // Remember Me
-        if (!empty($remember)) {
-            $token = bin2hex(random_bytes(16));
-            setcookie('remember_token', $token, time() + (86400 * 30), "/", "", false, true);
-            setcookie('account_id', $account['id'], time() + (86400 * 30), "/", "", false, true);
-            setcookie('user_type', 'account', time() + (86400 * 30), "/", "", false, true);
-        }
-
-        header("Location: ../index.php");
-        exit;
-    }
-
+/* ── Only POST is accepted ─────────────────────────────────── */
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ../auth-login-minimal.php');
+    exit;
 }
-?>
+
+/* ── CSRF verification ─────────────────────────────────────── */
+$submitted = $_POST['csrf_token'] ?? '';
+if (!hash_equals(csrfToken(), $submitted)) {
+    $_SESSION['login_error'] = 'Session expired. Please try again.';
+    header('Location: ../auth-login-minimal.php');
+    exit;
+}
+
+/* ── Rate limiting (session-based) ──────────────────────────
+   Max 5 failed attempts per 15 minutes; reset on success. */
+const MAX_ATTEMPTS = 5;
+const WINDOW_SEC   = 900;
+
+$now  = time();
+$attempts = $_SESSION['login_attempts'] ?? ['count' => 0, 'first' => $now];
+if ($now - ($attempts['first'] ?? $now) > WINDOW_SEC) {
+    $attempts = ['count' => 0, 'first' => $now];
+}
+if ($attempts['count'] >= MAX_ATTEMPTS) {
+    $wait = WINDOW_SEC - ($now - $attempts['first']);
+    $minutes = max(1, ceil($wait / 60));
+    $_SESSION['login_error'] = "Too many failed attempts. Try again in {$minutes} minute" . ($minutes !== 1 ? 's' : '') . '.';
+    header('Location: ../auth-login-minimal.php');
+    exit;
+}
+
+/* ── Input validation ──────────────────────────────────────── */
+$email        = trim((string)($_POST['email'] ?? ''));
+$password     = (string)($_POST['password'] ?? '');
+$remember     = !empty($_POST['rememberMe']);
+$account_type = $_POST['account_type'] ?? '';
+
+if (!in_array($account_type, ['user', 'company'], true)) {
+    $_SESSION['login_error'] = 'Invalid account type.';
+    header('Location: ../auth-login-minimal.php');
+    exit;
+}
+
+if ($email === '' || $password === '') {
+    $_SESSION['login_error'] = 'Please enter both email and password.';
+    header('Location: ../auth-login-minimal.php');
+    exit;
+}
+
+/* ── Helper: record failure and bounce ─────────────────────── */
+$fail = function (string $msg) use (&$attempts) {
+    $attempts['count']++;
+    $_SESSION['login_attempts'] = $attempts;
+    $_SESSION['login_error']    = $msg;
+    header('Location: ../auth-login-minimal.php');
+    exit;
+};
+
+/* ── Admin login ───────────────────────────────────────────── */
+if ($account_type === 'user') {
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user || !password_verify($password, $user['password'])) {
+        $fail('Incorrect email or password.');
+    }
+
+    // Success — regenerate session & populate
+    session_regenerate_id(true);
+    unset($_SESSION['login_attempts'], $_SESSION['login_error']);
+
+    $_SESSION['user_id']   = $user['id'];
+    $_SESSION['email']     = $user['email'];
+    $_SESSION['username']  = $user['username'];
+    $_SESSION['fullname']  = $user['fullname'];
+    $_SESSION['user_type'] = 'user';
+    $_SESSION['logged_in'] = true;
+
+    if ($remember) {
+        $token = bin2hex(random_bytes(16));
+        $opts  = ['expires' => time() + 86400 * 30, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax'];
+        setcookie('remember_token', $token, $opts);
+        setcookie('user_id',        (string)$user['id'], $opts);
+        setcookie('user_type',      'user', $opts);
+        $pdo->prepare("UPDATE users SET remember_token = ? WHERE id = ?")->execute([$token, $user['id']]);
+    }
+
+    header('Location: ../index.php');
+    exit;
+}
+
+/* ── Customer (company) login ──────────────────────────────── */
+$stmt = $pdo->prepare("
+    SELECT id, company_id, name, email, password, status
+    FROM accounts
+    WHERE email = ?
+    LIMIT 1
+");
+$stmt->execute([$email]);
+$account = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$account) {
+    $fail('Incorrect email or password.');
+}
+
+if ($account['status'] !== 'Active') {
+    $msg = match ($account['status']) {
+        'Inactive'     => 'Your account is inactive. Please contact support: Cs@TexasSpecializedQuartz.com',
+        'Blacklisted'  => 'Your account is blacklisted. Please contact support: Cs@TexasSpecializedQuartz.com',
+        default        => 'Account access denied.',
+    };
+    $fail($msg);
+}
+
+if (!password_verify($password, $account['password'])) {
+    $fail('Incorrect email or password.');
+}
+
+// Success — regenerate session & populate
+session_regenerate_id(true);
+unset($_SESSION['login_attempts'], $_SESSION['login_error']);
+
+$_SESSION['account_id']   = $account['id'];
+$_SESSION['company_id']   = $account['company_id'];
+$_SESSION['email']        = $account['email'];
+$_SESSION['account_name'] = $account['name'];
+$_SESSION['user_type']    = 'account';
+$_SESSION['logged_in']    = true;
+
+if ($remember) {
+    $token = bin2hex(random_bytes(16));
+    $opts  = ['expires' => time() + 86400 * 30, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax'];
+    setcookie('remember_token', $token, $opts);
+    setcookie('account_id',     (string)$account['id'], $opts);
+    setcookie('user_type',      'account', $opts);
+}
+
+header('Location: ../index.php');
+exit;

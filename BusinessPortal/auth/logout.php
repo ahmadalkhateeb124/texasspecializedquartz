@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../src/session.php';
 
 // مسح جميع بيانات الجلسة
 session_unset();

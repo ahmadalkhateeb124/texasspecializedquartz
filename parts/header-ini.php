@@ -47,6 +47,27 @@ $pagesContent = [
         'url' => 'https://texasspecializedquartz.com/CountertopMaterials',
         'og_type' => 'website'
     ],
+    'Countertops' => [
+        'title' => 'Custom Countertops | Bespoke Granite, Quartz & Marble Installations – Texas',
+        'description' => 'Custom-fabricated granite, quartz, marble & quartzite countertops in Texas. Hand-selected slabs, CNC precision, professional installation. Browse our gallery & request a free quote. Call (469) 814-0555.',
+        'keywords' => 'custom countertops Texas, bespoke countertops Dallas, granite countertop installation TX, quartz countertop fabricators, marble countertop design, kitchen countertop gallery, countertop installation Plano, custom stone countertops, countertop showroom Texas, made to order countertops',
+        'url' => 'https://texasspecializedquartz.com/Countertops',
+        'og_type' => 'website'
+    ],
+    'RoomDesigner' => [
+        'title' => 'Free Room Designer | Plan Your Kitchen Countertops Online',
+        'description' => 'Plan your kitchen, bathroom or bar countertop project with our free online room designer. Try different stones, edges & layouts before committing — no signup required.',
+        'keywords' => 'room designer tool, kitchen layout planner, countertop design online, virtual room planner, online kitchen designer, countertop layout tool, design my kitchen, free design tool Texas',
+        'url' => 'https://texasspecializedquartz.com/RoomDesigner',
+        'og_type' => 'website'
+    ],
+    'service-areas' => [
+        'title' => 'Texas Service Areas | Granite & Quartz Countertop Installation Statewide',
+        'description' => 'Texas Specialized Quartz & Granite serves 40+ cities across Texas — Dallas, Plano, Frisco, Fort Worth, Houston, Austin & more. Free in-home measurement. Same-week install.',
+        'keywords' => 'countertop service areas Texas, granite installation Dallas Fort Worth, quartz countertops DFW, countertop fabricator Plano Frisco, stone countertops Texas cities, granite installer near me, Texas countertop coverage, countertop company serving Texas',
+        'url' => 'https://texasspecializedquartz.com/service-areas',
+        'og_type' => 'website'
+    ],
     'EdgeType' => [
         'title' => 'Countertop Edge Profiles | 25+ Granite & Quartz Styles',
         'description' => 'Explore 25+ countertop edge profiles with photos. Bullnose, ogee, waterfall, beveled & more. Choose the perfect edge for your granite or quartz countertops.',
@@ -135,13 +156,6 @@ $pagesContent = [
         'og_type' => 'website'
     ],
 
-    'Reviews' => [
-        'title' => 'Customer Reviews | 5-Star Rated Countertop Installers',
-        'description' => 'Read 200+ verified customer reviews of our countertop services. 4.9★ average rating. See real before/after photos & honest feedback from Texas homeowners.',
-        'keywords' => 'countertop reviews Texas, granite installer reviews, quartz countertop ratings, customer testimonials, 5 star countertop company, best countertop installers TX, homeowner reviews, countertop before after photos, trusted stone fabricators, top rated countertop company',
-        'url' => 'https://texasspecializedquartz.com/Reviews',
-        'og_type' => 'website'
-    ],
 
     'blog' => [
         'title' => 'Countertop Blog | Design Ideas, Tips & Trends 2026',
@@ -190,7 +204,27 @@ else {
 // ═══════════════════════════════════════
 //  Page Meta Assignment
 // ═══════════════════════════════════════
-if (array_key_exists($requestUrl, $pagesContent)) {
+
+/* Dynamic city-landing SEO: /locations/<slug> */
+if ($requestUrl === 'locations' && !empty($_GET['puid'])) {
+    $citySlug = strtolower(trim($_GET['puid']));
+    $citiesData = require __DIR__ . '/locations-data.php';
+    if (isset($citiesData[$citySlug]) && ($citiesData[$citySlug]['tier'] ?? '') !== 'extended') {
+        $cd        = $citiesData[$citySlug];
+        $cName     = $cd['name'];
+        $cState    = $cd['state'] ?? 'TX';
+
+        $PageTitle = "Granite, Quartz &amp; Marble Countertops in {$cName}, {$cState} | Texas Specialized Quartz";
+        $metaDescription = "Custom granite, quartz, marble &amp; quartzite countertops for {$cName}, {$cState} homes. Free in-home measurement, same-week installation, lifetime craftsmanship warranty. Call (469) 814-0555.";
+        $escapedDescription = htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8');
+        $KeyWords  = "countertops {$cName} TX, granite countertops {$cName}, quartz countertops {$cName} Texas, marble countertops {$cName}, kitchen countertops {$cName}, countertop installation {$cName} TX, stone fabricator {$cName}, custom countertops {$cName} Texas, granite installer {$cName} TX, countertop company {$cName}";
+        $canonicalUrl = "https://texasspecializedquartz.com/locations/{$citySlug}";
+        $ogType    = 'website';
+        $skipDefaultMeta = true;
+    }
+}
+
+if (empty($skipDefaultMeta) && array_key_exists($requestUrl, $pagesContent)) {
     $page = $pagesContent[$requestUrl];
 
     $PageTitle = $page['title'];
@@ -198,7 +232,7 @@ if (array_key_exists($requestUrl, $pagesContent)) {
     $escapedDescription = htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8');
     $KeyWords = $page['keywords'];
     $ogType = $page['og_type'] ?? 'website';
-} else {
+} elseif (empty($skipDefaultMeta)) {
     $PageTitle = "Texas Specialized Quartz | Premium Countertops & Stone Surfaces";
     $escapedDescription = "Premium granite, quartz & marble countertops in Texas. Custom fabrication, professional installation & free estimates. Serving all of TX with 15+ years experience.";
     $KeyWords = "Texas Specialized Quartz, granite countertops Texas, quartz countertops TX, marble countertops, custom countertops, countertop installation, stone fabrication, kitchen countertops near me, bathroom countertops Texas, affordable countertops TX";

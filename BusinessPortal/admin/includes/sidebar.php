@@ -2,12 +2,10 @@
 
 /**
  * admin/includes/sidebar.php
- * All navigation links for the admin panel.
+ * Renders the top brand bar + horizontal tabs (replaces the old left sidebar).
  */
 
-// متغيرات عامة موجودة
 $_cu       = $currentUser ?? [];
-$_initials = strtoupper(substr($_cu['name'] ?? 'A', 0, 2));
 $_page     = basename($_SERVER['PHP_SELF'], '.php');
 
 function _nav(string $page): string
@@ -16,184 +14,121 @@ function _nav(string $page): string
     return $page === $_page ? 'active' : '';
 }
 
-// --- بيانات الادمن خاصة بالـ sidebar فقط، بدون override للمتغيرات الأصلية ---
-function getAdminDataSidebar()
-{
+/* Admin user info for avatar / name in topbar. */
+$adminSidebar = [];
+try {
     if (!empty($_SESSION['user_id'])) {
-        try {
-            global $pdo;
-            $stmt = $pdo->prepare("SELECT id, fullname, username, email, avatar FROM users WHERE id = ?");
-            $stmt->execute([$_SESSION['user_id']]);
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-        } catch (PDOException $e) {
-            return [];
-        }
+        $stmt = $pdo->prepare("SELECT id, fullname, username, email, avatar FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $adminSidebar = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
     }
-    return [];
+} catch (PDOException $e) {
+    // silent
 }
+$_initialsSidebar = strtoupper(substr($adminSidebar['fullname'] ?? 'A', 0, 2));
 
-// جلب بيانات الادمن للـ sidebar فقط
-$adminSidebar = getAdminDataSidebar();
+/* Tab definitions — page => [icon, label] */
+$adminTabs = [
+    'index'      => ['bxs-dashboard', 'Dashboard'],
+    'orders'     => ['bx-file',       'Orders'],
+    'calendar'   => ['bx-calendar',   'Calendar'],
+    'inquiries'  => ['bx-envelope',   'Inbox'],
+    'customers'  => ['bx-group',      'Customers'],
+    'products'   => ['bx-cube-alt',   'Remnants'],
+    'inventory'  => ['bx-cube',       'Inventory'],
+    'sinks'      => ['bx-grid-alt',   'Sinks'],
+    'gallery'    => ['bx-image',      'Gallery'],
+    'blog'       => ['bx-news',       'Blog'],
+    'faq'        => ['bx-help-circle','FAQ'],
+    'priceList'  => ['bx-file',       'Price Lists'],
+    'training'   => ['bx-video',      'Videos'],
+    'settings'   => ['bx-cog',        'Settings'],
+    'profile'    => ['bx-user',       'Profile'],
+];
 
-// متغيرات خاصة بالـ sidebar لتجنب أي override
-$_cuSidebar       = $adminSidebar;
-$_initialsSidebar = strtoupper(substr($_cuSidebar['fullname'] ?? 'A', 0, 2));
+/* Pages whose tab should stay active while on related sub-pages */
+$tabAliases = [
+    'orders'    => ['order-new', 'order-edit', 'order-view'],
+    'customers' => ['customers-new', 'customers-edit', 'customers-view'],
+    'products'  => ['products-new', 'products-edit'],
+    'sinks'     => ['sinks-new', 'sinks-edit'],
+    'blog'      => ['blog-new', 'blog-edit'],
+    'inventory' => ['inventory-new', 'inventory-edit'],
+];
 
+$activeTab = $_page;
+foreach ($tabAliases as $tab => $aliases) {
+    if (in_array($_page, $aliases, true)) {
+        $activeTab = $tab;
+        break;
+    }
+}
 ?>
-<aside class="app-sidebar" id="appSidebar">
 
-    <!-- Brand -->
-    <a href="index.php" class="sidebar-brand" style="text-decoration:none;">
-        <div class="sidebar-avatar"> <img src="../auth/uploads/<?= htmlspecialchars($adminSidebar['avatar'] ?? 'default-avatar.png') ?>"
-                style="border-radius:50%; border:3px solid var(--color-surface); object-fit:cover;"
-                alt="Avatar"></div>
-        <div>
-            <div class="sidebar-brand-name">
-                <?php
-                if (!empty($adminSidebar['fullname'])) {
-                    $words = explode(' ', $adminSidebar['fullname']);
-                    $initials = '';
-                    foreach ($words as $word) {
-                        $initials .= mb_substr($word, 0, 1); // يدعم الحروف العربية كمان
-                    }
-                    echo htmlspecialchars(strtoupper($initials)); // يحولهم لكابيتال إذا بدك
-                } else {
-                    echo 'Granite Artists';
-                }
-                ?>
-            </div>
-            <div class="sidebar-brand-tag">Admin</div>
-        </div>
-    </a>
+<!-- ── Top brand bar ───────────────────────────────────────── -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="index" class="topbar-brand">
+            <img src="/images/Granit-Img/logo.png" alt="">
+            <span class="topbar-brand-name">Texas Specialized Quartz &amp; Granite</span>
+        </a>
 
-    <!-- Nav -->
-    <nav class="sidebar-nav">
-
-        <p class="nav-section-title">Overview</p>
-        <ul class="nav-list">
-            <li>
-                <a href="index.php" class="nav-link <?= _nav('index') ?>">
-                    <span class="nav-icon"><i class='bx bxs-dashboard'></i></span>
-                    Dashboard
-                </a>
-            </li>
-        </ul>
-
-        <p class="nav-section-title">Fabrication</p>
-        <ul class="nav-list">
-            <li>
-                <a href="orders.php" class="nav-link <?= _nav('orders') ?>">
-                    <span class="nav-icon"><i class='bx bx-file'></i></span>
-                    Orders
-                </a>
-            </li>
-            <li>
-                <a href="order-new.php" class="nav-link <?= _nav('order-new') ?>">
-                    <span class="nav-icon"><i class='bx bx-plus-circle'></i></span>
-                    New Order
-                </a>
-            </li>
-        </ul>
-
-        <p class="nav-section-title">Catalog</p>
-        <ul class="nav-list">
-            <li>
-                <a href="products.php" class="nav-link <?= _nav('products') ?>">
-                    <span class="nav-icon"><i class='bx bx-cube-alt'></i></span>
-                    Remnants
-                </a>
-            </li>
-            <li>
-                <a href="products-new.php" class="nav-link <?= _nav('products-new') ?>">
-                    <span class="nav-icon"><i class='bx bx-image-add'></i></span>
-                    Add Remnants
-                </a>
-            </li>
-        </ul>
-
-        <p class="nav-section-title">Customers</p>
-        <ul class="nav-list">
-            <li>
-                <a href="customers.php" class="nav-link <?= _nav('customers') ?>">
-                    <span class="nav-icon"><i class='bx bx-group'></i></span>
-                    All Customers
-                </a>
-            </li>
-            <li>
-                <a href="customers-new.php" class="nav-link <?= _nav('customers-new') ?>">
-                    <span class="nav-icon"><i class='bx bx-user-plus'></i></span>
-                    Add Customer
-                </a>
-            </li>
-        </ul>
-
-        <p class="nav-section-title">Resources</p>
-        <ul class="nav-list">
-            <li>
-                <a href="training.php" class="nav-link <?= _nav('training') ?>">
-                    <span class="nav-icon"><i class='bx bx-video'></i></span>
-                    Video Training
-                </a>
-            </li>
-            <li>
-                <a href="priceList.php" class="nav-link <?= _nav('priceList') ?>">
-                    <span class="nav-icon"><i class='bx bx-file'></i></span>
-                    Price Lists
-                </a>
-            </li>
-        </ul>
-
-        <p class="nav-section-title">Support</p>
-        <ul class="nav-list">
-            <li>
-                <a href="https://mail.google.com/mail/?view=cm&to=ahmad@webkoit.com" target="_blank" class="nav-link">
-                    <span class="nav-icon"><i class='bx bx-support'></i></span>
-                    Help Center
-                </a>
-            </li>
-        </ul>
-
-    </nav>
-
-    <!-- User footer -->
-    <div class="sidebar-footer">
-        <div class="dropdown dropup w-100">
-            <button class="sidebar-user-btn dropdown-toggle w-100"
-                data-bs-toggle="dropdown" type="button" style="border:none;">
-                <div class="sidebar-avatar"> <img src="../auth/uploads/<?= htmlspecialchars($adminSidebar['avatar'] ?? 'default-avatar.png') ?>"
-                        style="border-radius:50%; border:3px solid var(--color-surface); object-fit:cover;"
-                        alt="Avatar"></div>
-                <div style="flex:1;min-width:0;">
-                    <div class="sidebar-user-name"><?= htmlspecialchars($_cu['name'] ?? 'Admin') ?></div>
-                    <div class="sidebar-user-meta">Administrator</div>
-                </div>
+        <div class="topbar-right">
+        <!-- Notifications (placeholder) -->
+        <div class="dropdown">
+            <button class="topbar-icon-btn" data-bs-toggle="dropdown" title="Notifications">
+                <i class='bx bx-bell'></i>
             </button>
-            <ul class="dropdown-menu" style="min-width:200px;margin-bottom:4px;">
+            <div class="dropdown-menu dropdown-menu-end" style="min-width:280px;">
+                <div class="empty-state py-3" style="padding:20px;">
+                    <i class='bx bx-bell-off empty-state-icon' style="font-size:28px;"></i>
+                    <p class="mb-0 text-muted" style="font-size:12px;">No new notifications</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="topbar-divider"></div>
+
+        <!-- User dropdown -->
+        <div class="dropdown">
+            <div class="topbar-user dropdown-toggle" data-bs-toggle="dropdown" role="button">
+                <div class="topbar-user-avatar">
+                    <?php if (!empty($adminSidebar['avatar']) && file_exists(__DIR__ . '/../../auth/uploads/' . $adminSidebar['avatar'])): ?>
+                        <img src="../auth/uploads/<?= htmlspecialchars($adminSidebar['avatar']) ?>" alt="">
+                    <?php else: ?>
+                        <?= htmlspecialchars($_initialsSidebar) ?>
+                    <?php endif; ?>
+                </div>
+                <div class="d-none d-sm-block">
+                    <div class="topbar-user-name"><?= htmlspecialchars($adminSidebar['fullname'] ?? 'Admin') ?></div>
+                    <div class="topbar-user-role">Administrator</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                    <div class="dropdown-header">
-                        <?php
-                        if (!empty($adminSidebar['fullname'])) {
-                            $words = explode(' ', $adminSidebar['fullname']);
-                            $initials = '';
-                            foreach ($words as $word) {
-                                $initials .= mb_substr($word, 0, 1); // يدعم العربية والإنجليزية
-                            }
-                            echo htmlspecialchars(strtoupper($initials)); // حروف كبيرة
-                        }
-                        ?>
+                    <div class="px-3 py-2">
+                        <div style="font-size:13px;font-weight:600;"><?= htmlspecialchars($adminSidebar['fullname'] ?? 'Admin') ?></div>
+                        <div style="font-size:11px;color:var(--text-sub);"><?= htmlspecialchars($adminSidebar['email'] ?? '') ?></div>
                     </div>
                 </li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="profile.php"><i class='bx bx-user'></i> My Profile</a></li>
-                <li>
-                    <hr class="dropdown-divider">
-                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="profile"><i class='bx bx-user'></i> My Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class='bx bx-log-out'></i> Sign Out</a></li>
             </ul>
         </div>
+        </div>
     </div>
+</header>
 
-</aside>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<!-- ── Horizontal tabs navigation ──────────────────────────── -->
+<nav class="tabs-nav">
+    <div class="tabs-nav-inner">
+        <?php foreach ($adminTabs as $page => [$icon, $label]): ?>
+            <a href="<?= $page ?>"
+               class="tab-link <?= $activeTab === $page ? 'active' : '' ?>">
+                <?= $label ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</nav>

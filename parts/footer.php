@@ -1,69 +1,116 @@
-<footer class="footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 wow fadeInUp " data-wow-delay="0.05s">
-                <div class="footer-logo">
-                    <img src="/images/Granit-Img/logo.png" alt="Texas Specialized Quartz & Granite Logo">
-                </div>
+<?php
+$phone = setting('business_phone', '(469) 814-0555');
+$email = setting('business_email', 'Cs@TexasSpecializedQuartz.com');
+$addr  = setting('business_address', '1225 W College Ave #616');
+$city  = setting('business_city', 'Carrollton');
+$state = setting('business_state', 'TX');
+$zip   = setting('business_zip', '75006');
+$hours = setting('business_hours', 'Mon-Fri: 9:00 AM - 6:00 PM | Sat: 9:00 AM - 3:00 PM');
+$bizName = setting('business_name', 'Texas Specialized Quartz & Granite');
+$tagline = setting('business_tagline', 'Premium Granite Countertops');
+?>
+<footer class="tx-footer">
+    <div class="tx-footer-inner">
 
-                <p>Service Areas: McKinney, Plano, Frisco, Parker, Wylie, Sachse, Richardson. We are here for all your custom countertop needs!</p>
-            </div>
+        <!-- Brand column -->
+        <div class="tx-footer-col tx-footer-brand">
+            <a href="<?= createLink($base_url, 'Home') ?>" class="tx-footer-logo">
+                <img src="<?= $base_url ?>images/Granit-Img/logo.png" alt="<?= htmlspecialchars($bizName) ?> Logo">
+            </a>
+            <p class="tx-footer-about">
+                Premium granite, quartz &amp; marble fabrication and installation — crafted for Texas homes with uncompromising quality since 2005.
+            </p>
+            <ul class="tx-footer-social">
+                <?php if ($fb = setting('social_facebook')): ?>
+                    <li><a href="<?= htmlspecialchars($fb) ?>" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+                <?php endif; ?>
+                <?php if ($ig = setting('social_instagram')): ?>
+                    <li><a href="<?= htmlspecialchars($ig) ?>" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a></li>
+                <?php endif; ?>
+                <?php if ($yt = setting('social_youtube')): ?>
+                    <li><a href="<?= htmlspecialchars($yt) ?>" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a></li>
+                <?php endif; ?>
+                <?php if ($tw = setting('social_twitter')): ?>
+                    <li><a href="<?= htmlspecialchars($tw) ?>" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a></li>
+                <?php endif; ?>
+                <?php if ($li = setting('social_linkedin')): ?>
+                    <li><a href="<?= htmlspecialchars($li) ?>" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a></li>
+                <?php endif; ?>
+                <?php if ($tk = setting('social_tiktok')): ?>
+                    <li><a href="<?= htmlspecialchars($tk) ?>" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a></li>
+                <?php endif; ?>
+            </ul>
+        </div>
 
-            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.20s">
-                <div class="footer-contact">
-                    <h5>CALL CENTER</h5>
-                    <p><a href="tel:+1 469-814-0555">+1 (469) 814-0555</a></p>
-                    <p><a href="mailto:Cs@TexasSpecializedQuartz.com">Cs@TexasSpecializedQuartz.com</a></p>
-                    <ul class="footer-social">
-                        <li><a href="https://www.facebook.com/people/TexasSpecializedQuartz/61575594327293/" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                        <li><a href="https://www.instagram.com/texas.specialized.quartz/" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                        <!--<li><a href="https://x.com/graniteartists" target="_blank"><i class="fab fa-twitter"></i></a></li>-->
-                        <li><a href="https://www.youtube.com/@texas.specialized.quartz" target="_blank"><i class="fab fa-youtube"></i></a></li>
-                        <!--<li><a href="https://g.co/kgs/CX1qFyP" target="_blank"><i class="fab fa-google"></i></a></li>-->
-                        <li><a href="https://www.pinterest.com/texasspecializedquartz/_created/" target="_blank"><i class="fab fa-pinterest"></i></a></li>
-                    </ul>
-                </div>
-            </div>
+   
 
-            <div class="col-12 footer-copyright">
-                <span class="copyright">
-                    © 2026 Texas Specialized Quartz & Granite TX | Premium Granite Countertops
-                </span>
-                <span class="creation">
-                    & Expert Installations | Designed by <a href="https://webkoit.com/" target="_blank">Webkoit</a>
+        <!-- Materials -->
+        <div class="tx-footer-col">
+            <h5>Materials</h5>
+            <ul>
+                <li><a href="<?= createLink($base_url, 'CountertopMaterials') ?>">Granite Countertops</a></li>
+                <li><a href="<?= createLink($base_url, 'Countertops') ?>">Quartz Countertops</a></li>
+                <li><a href="<?= createLink($base_url, 'Countertops') ?>">Marble Countertops</a></li>
+                <li><a href="<?= createLink($base_url, 'KitchenCountertops') ?>">Kitchen Countertops</a></li>
+                <li><a href="<?= createLink($base_url, 'EdgeType') ?>">Edge Types</a></li>
+                <li><a href="<?= createLink($base_url, 'Sinks') ?>">Sinks</a></li>
+                <li><a href="<?= createLink($base_url, 'InstallationServices') ?>">Installation</a></li>
+            </ul>
+        </div>
 
-                </span>
+        <!-- Service Areas (Local SEO) -->
+        <div class="tx-footer-col">
+            <h5>Service Areas</h5>
+            <ul>
+                <?php
+                $footerCities = require __DIR__ . '/locations-data.php';
+                $footerPrimary = array_filter($footerCities, fn($c) => ($c['tier'] ?? '') === 'primary');
+                foreach ($footerPrimary as $slug => $c):
+                ?>
+                    <li><a href="<?= htmlspecialchars($base_url . 'locations/' . $slug) ?>">Countertops <?= htmlspecialchars($c['name']) ?>, TX</a></li>
+                <?php endforeach; ?>
+                <li><a href="<?= htmlspecialchars($base_url) ?>service-areas"><strong class="text-light" >View all Texas cities →</strong></a></li>
+            </ul>
+        </div>
 
-            </div>
+        <!-- Contact -->
+        <div class="tx-footer-col tx-footer-contact">
+            <h5>Get in Touch</h5>
+            <ul class="tx-footer-contact-list">
+                <li>
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>
+                        <?= htmlspecialchars($addr) ?>,<br>
+                        <?= htmlspecialchars($city) ?>, <?= htmlspecialchars($state) ?> <?= htmlspecialchars($zip) ?>
+                    </span>
+                </li>
+                <li>
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:<?= htmlspecialchars(preg_replace('/[^+\d]/', '', $phone)) ?>"><?= htmlspecialchars($phone) ?></a>
+                </li>
+                <li>
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:<?= htmlspecialchars($email) ?>"><?= htmlspecialchars($email) ?></a>
+                </li>
+                <li>
+                    <i class="far fa-clock"></i>
+                    <span><?= htmlspecialchars($hours) ?></span>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="tx-footer-bottom">
+        <div class="tx-footer-bottom-inner">
+            <span class="tx-copy">
+                © <?= date('Y') ?> <?= htmlspecialchars($bizName) ?>. All rights reserved.
+            </span>
+            <span class="tx-tagline"><?= htmlspecialchars($tagline) ?></span>
+            <span class="tx-credit">Developed by <a href="https://webkoit.com/" target="_blank" rel="noopener">Webkoit</a></span>
         </div>
     </div>
 </footer>
-
-
-<style>
-    .footer-logo {
-        width: 90px;
-        height: 90px;
-        background-color: #f6f6f6;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-    }
-
-    @media (max-width: 768px) {
-        .footer-logo {
-            margin: 0 auto;
-            display: flex;
-            margin-bottom: 20px;
-        }
-    }
-
-    .footer-logo img {
-        width: 100%;
-    }
-</style>
 <!-- end footer -->
 
 <!-- JS FILES -->
@@ -73,9 +120,6 @@
 <script src="<?= $base_url ?>js/swiper.min.js"></script>
 <script src="<?= $base_url ?>js/fancybox.min.js"></script>
 <script src="<?= $base_url ?>js/odometer.min.js"></script>
-<script src="<?= $base_url ?>js/wow.min.js"></script>
-<script src="<?= $base_url ?>js/text-rotater.js"></script>
-<script src="<?= $base_url ?>js/jquery.stellar.js"></script>
 <script src="<?= $base_url ?>js/isotope.min.js"></script>
 <script src="<?= $base_url ?>js/scripts.js"></script>
 </body>

@@ -11,7 +11,7 @@ $type = $_GET['type'];
 $value = trim($_GET['value']);
 
 // Include database connection
-require_once __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../auth/auth-check.php';
 
 try {

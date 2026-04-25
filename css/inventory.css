@@ -1,0 +1,196 @@
+*{box-sizing:border-box;}
+.stone-hero h1 em{
+  font-style:normal;
+  color:#999999;
+  font-weight:600;
+}
+.stone-hero p{
+  font-size:15px;
+  color:#5c5650;
+  max-width:680px;
+  line-height:1.75;
+  margin-bottom:.5rem;
+}
+.stone-hero .phone-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:1.25rem;
+  font-size:14px;
+  color:#5c5650;
+}
+.stone-hero .phone-link a{
+  color:#999999;
+  font-weight:600;
+  text-decoration:none;
+}
+.stone-hero .phone-link a:hover{text-decoration:underline;}
+
+/* ── FEATURES STRIP ── */
+.features-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:3rem;
+}
+.feat-item{
+    background: rgb(111 111 111 / 0.11);
+  border-radius:10px;
+  padding:1rem 1.125rem;
+}
+.feat-item .feat-label{
+  font-size:11px;
+  color:#8c877f;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  margin-bottom:5px;
+}
+.feat-item .feat-val{
+  font-size:14px;
+  font-weight:500;
+  color:#1a1814;
+}
+
+/* ── SECTION HEADER ── */
+.stone-section-head{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin:3rem 0 1.5rem;
+}
+.stone-section-head h2{
+  font-size:22px;
+  font-weight:500;
+  color:#1a1814;
+  margin:0;
+}
+.stone-section-head .slab-count{
+  font-size:13px;
+  color:#8c877f;
+}
+.stone-divider{
+  height:1px;
+  background:#e8e2d9;
+  margin-bottom:1.75rem;
+}
+
+/* ── SUB SECTION ── */
+.stone-sub-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:2.5rem 0 1.5rem;
+}
+.stone-sub-head::before{
+  content:'';
+  width:3px;
+  height:20px;
+  background:#999999;
+  border-radius:2px;
+  flex-shrink:0;
+}
+.stone-sub-head h3{
+  font-size:17px;
+  font-weight:500;
+  color:#1a1814;
+  margin:0;
+}
+
+/* ── STONE CARD ── */
+.stone-card{
+  background:#fff;
+  border:1px solid #e8e2d9;
+  border-radius:12px;
+  overflow:hidden;
+  transition:border-color .2s, box-shadow .2s;
+  height:100%;
+}
+.stone-card:hover{
+  border-color:#c4b89a;
+  box-shadow:0 4px 20px rgba(0,0,0,.07);
+}
+.stone-card .img-wrap{
+  position:relative;
+  aspect-ratio:4/3;
+  background:#f7f4f0;
+  overflow:hidden;
+}
+.stone-card .img-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .4s ease;
+}
+.stone-card:hover .img-wrap img{
+  transform:scale(1.04);
+}
+.stone-card .qty-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:rgba(0,0,0,.52);
+  color:#fff;
+  font-size:11px;
+  font-weight:500;
+  padding:3px 9px;
+  border-radius:20px;
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+.stone-card .img-placeholder{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.stone-card .img-placeholder svg{opacity:.18;}
+.stone-card .stone-info{
+  padding:.875rem 1rem 1rem;
+}
+.stone-card .stone-info h4{
+  font-size:14px;
+  font-weight:600;
+  color:#1a1814;
+  margin:0 0 .5rem;
+}
+.stone-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.stone-meta .tag{
+  font-size:11px;
+  color:#6b6560;
+  background:#f7f4f0;
+  padding:2px 9px;
+  border-radius:20px;
+}
+.stone-meta .tag.size{
+  color:#999999;
+  background:#f5ede2;
+}
+
+/* ── QUARTZITE NO-IMAGE ── */
+.no-img-card{
+  background:#f7f4f0;
+  border-radius:12px;
+  border:1px solid #e8e2d9;
+  aspect-ratio:4/3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.no-img-card span{
+  font-size:13px;
+  color:#8c877f;
+}
+
+@media(max-width:767px){
+  .features-strip{grid-template-columns:1fr 1fr;}
+  .stone-section-head h2{font-size:18px;}
+}
+@media(max-width:480px){
+  .features-strip{grid-template-columns:1fr;}
+}

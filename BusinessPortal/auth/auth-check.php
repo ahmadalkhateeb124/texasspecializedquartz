@@ -1,6 +1,6 @@
 <?php
 
-include __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../includes/db.php';
 
 // التحقق من تسجيل الدخول
 function isLoggedIn() {

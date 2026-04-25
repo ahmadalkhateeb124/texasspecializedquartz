@@ -1,38 +1,147 @@
+# =========================
+# 0. Security Headers
+#    Sent on every response. mod_headers is required.
+# =========================
+<IfModule mod_headers.c>
+    # Block clickjacking — only same-origin frames allowed
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Stop browsers from MIME-sniffing the response
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Limit information leaked through the Referer header
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Disable powerful browser features we don't use
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=()"
+
+    # Cross-origin isolation (modest — keep cross-origin embeds working)
+    Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+
+    # HSTS — only on HTTPS so we don't lock out localhost dev
+    <If "%{HTTPS} == 'on'">
+        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    </If>
+
+    # Remove server fingerprinting
+    Header unset X-Powered-By
+    Header unset Server
+</IfModule>
+<IfModule mod_php.c>
+    php_flag expose_php Off
+</IfModule>
+
+# =========================
+# 0.5 Block dotfiles, sensitive files & dangerous extensions
+# =========================
+<FilesMatch "(^\.(?!well-known)|\.(env|env\..*|sql|log|md|lock|json|yml|yaml|ini|conf|sh|bak|old|swp|orig|tpl)$|composer\.(json|lock)$|package(-lock)?\.json$|(database|mail)\.credentials\.php$)">
+    Require all denied
+</FilesMatch>
+
+# =========================
+# 0.6 Compression — gzip everything text-based
+# =========================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json application/xml
+    AddOutputFilterByType DEFLATE application/x-javascript application/rss+xml application/atom+xml
+    AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf application/font-woff application/font-woff2
+</IfModule>
+
+# =========================
+# 0.7 HTTP caching for static assets (huge perf win)
+# =========================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault                              "access plus 1 hour"
+
+    # Long-lived assets — fingerprinted/rarely-changing
+    ExpiresByType image/jpeg                    "access plus 1 year"
+    ExpiresByType image/png                     "access plus 1 year"
+    ExpiresByType image/webp                    "access plus 1 year"
+    ExpiresByType image/avif                    "access plus 1 year"
+    ExpiresByType image/svg+xml                 "access plus 1 month"
+    ExpiresByType image/x-icon                  "access plus 1 year"
+    ExpiresByType video/mp4                     "access plus 1 year"
+    ExpiresByType video/webm                    "access plus 1 year"
+
+    # Fonts
+    ExpiresByType font/ttf                      "access plus 1 year"
+    ExpiresByType font/otf                      "access plus 1 year"
+    ExpiresByType font/woff                     "access plus 1 year"
+    ExpiresByType font/woff2                    "access plus 1 year"
+    ExpiresByType application/font-woff         "access plus 1 year"
+    ExpiresByType application/font-woff2        "access plus 1 year"
+
+    # CSS / JS — 1 month is safe (bust with ?v=X when you ship a change)
+    ExpiresByType text/css                      "access plus 1 month"
+    ExpiresByType application/javascript        "access plus 1 month"
+    ExpiresByType text/javascript               "access plus 1 month"
+
+    # HTML must always be revalidated
+    ExpiresByType text/html                     "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Add immutable hint where safe
+    <FilesMatch "\.(jpg|jpeg|png|webp|avif|gif|ico|woff|woff2|ttf|otf|mp4|webm)$">
+        Header append Cache-Control "public, immutable"
+    </FilesMatch>
+    <FilesMatch "\.(css|js)$">
+        Header append Cache-Control "public"
+    </FilesMatch>
+    # HTML — never cache aggressively
+    <FilesMatch "\.(php|html)$">
+        Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+    </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
-RewriteEngine On
-RewriteBase /
+    RewriteEngine On
 
-# =========================
-# 1️⃣ Force HTTPS
-# =========================
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    # =========================
+    # 1. Force HTTPS (skip on localhost / dev)
+    # =========================
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# =========================
-# 2️⃣ Allow all assets to load normally
-# =========================
-RewriteRule ^(images|css|js|assets|uploads|fonts)/ - [L,NC]
-RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|ico|svg|webp|woff|woff2|ttf|eot|pdf|mp4)$ [NC]
-RewriteRule ^ - [L]
+    # =========================
+    # 1.5 Dynamic SEO feeds (sitemap / rss / atom)
+    # =========================
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    RewriteRule ^rss\.xml$     rss.php     [L]
+    RewriteRule ^atom\.xml$    atom.php    [L]
 
-# =========================
-# 3️⃣ Remove trailing slash from URLs (if not a folder)
-# =========================
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.+)/$ /$1 [L,R=301]
+    # =========================
+    # 2. Let real files / folders pass through untouched
+    #    (assets, uploads, existing PHP files, admin/customer panels, etc.)
+    # =========================
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-# =========================
-# 4️⃣ Blog article routing
-# =========================
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^newsdetail/([a-zA-Z0-9-]+)$ newsdetail/index.php?slug=$1 [L,QSA]
+    # =========================
+    # 3. Remove trailing slash from non-directory URLs
+    # =========================
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+)/$ /$1 [L,R=301]
 
-# =========================
-# 5️⃣ Generic routing for all other URLs
-# =========================
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^/]+)(?:/([^/]*))?$ index.php?url=$1&puid=$2 [QSA,L]
+    # =========================
+    # 4. Blog article routing: /newsdetail/<slug>  ->  pages/newsdetail.php?slug=...
+    # =========================
+    RewriteRule ^newsdetail/([a-zA-Z0-9-]+)/?$ index.php?url=newsdetail&slug=$1 [L,QSA]
 
+    # =========================
+    # 4.1 Service-area city pages: /locations/<city-slug>  ->  pages/locations.php?puid=<slug>
+    # =========================
+    RewriteRule ^locations/([a-z0-9-]+)/?$ index.php?url=locations&puid=$1 [L,QSA]
+
+    # /service-areas → pages/service-areas.php (slug contains hyphen — explicit rule)
+    RewriteRule ^service-areas/?$ index.php?url=service-areas [L,QSA]
+
+    # =========================
+    # 5. Generic page routing: /<page>[/<puid>]  ->  index.php?url=<page>&puid=<puid>
+    # =========================
+    RewriteRule ^([^/]+)(?:/([^/]*))?$ index.php?url=$1&puid=$2 [QSA,L]
 </IfModule>

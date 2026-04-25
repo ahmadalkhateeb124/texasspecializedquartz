@@ -1,7 +1,7 @@
 <?php
 // update_product.php - Handle product updates with image uploads
-session_start();
-require_once __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../src/session.php';
+require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/auth-check.php';
 
 header('Content-Type: application/json');

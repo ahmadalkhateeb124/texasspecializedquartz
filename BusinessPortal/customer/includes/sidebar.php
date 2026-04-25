@@ -2,129 +2,98 @@
 
 /**
  * customer/includes/sidebar.php
- * Requires: $currentUser, $customerMeta (optional: company_name, company_id)
+ * Top brand bar + horizontal tabs for the customer portal.
  */
-$_cu       = $currentUser ?? [];
-$_initials = strtoupper(substr($_cu['name'] ?? 'C', 0, 2));
-$_page     = basename($_SERVER['PHP_SELF'], '.php');
-$_company  = $customerMeta['company_name'] ?? '';
 
-function _custSidebarActive(string $p): string
-{
-    global $_page;
-    return $p === $_page ? 'active' : '';
-}
-?>
-<?php
-$adminAvatar = 'default-avatar.png';
-$adminData = [];
+$_cu   = $currentUser ?? [];
+$_page = basename($_SERVER['PHP_SELF'], '.php');
 
-try {
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([2]);
-    $adminData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($adminData) {
-        $filePath = __DIR__ . '/../../auth/uploads/' . $adminData['avatar'];
-
-        if (!empty($adminData['avatar']) && file_exists($filePath)) {
-            $adminAvatar = $adminData['avatar'];
-        }
+if (!function_exists('_nav')) {
+    function _nav(string $page): string
+    {
+        global $_page;
+        return $page === $_page ? 'active' : '';
     }
-} catch (PDOException $e) {
-    // echo $e->getMessage();
+}
+
+$initials = strtoupper(substr($_cu['name'] ?? 'C', 0, 2));
+
+$customerTabs = [
+    'index'     => ['bxs-dashboard', 'Dashboard'],
+    'orders'    => ['bx-file',       'My Orders'],
+    'order-new' => ['bx-plus-circle','New Order'],
+    'priceList' => ['bx-file',       'Price Lists'],
+    'training'  => ['bx-video',      'Training'],
+    'profile'   => ['bx-user',       'Profile'],
+];
+
+$tabAliases = [
+    'orders' => ['order-view'],
+];
+
+$activeTab = $_page;
+foreach ($tabAliases as $tab => $aliases) {
+    if (in_array($_page, $aliases, true)) {
+        $activeTab = $tab;
+        break;
+    }
 }
 ?>
-<aside class="app-sidebar" id="appSidebar">
 
-    <!-- ── Brand ────────────────────────────────── -->
-    <a href="index.php" class="sidebar-brand" style="text-decoration:none;">
-        <div class="sidebar-brand-logo">
-            <img src="../auth/uploads/<?= htmlspecialchars($adminAvatar) ?>"
-                alt="Avatar"
-                style="width:100%; height:100%; object-fit:cover; border-radius:16px;">
-        </div>
-        <div>
-            <div class="sidebar-brand-name">TSQ&G </div>
-            <span class="sidebar-brand-tag">Portal</span>
-        </div>
-    </a>
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="index" class="topbar-brand">
+            <img src="/images/Granit-Img/logo.png" alt="">
+            <span class="topbar-brand-name">Texas Specialized Quartz &amp; Granite</span>
+        </a>
 
-
-    <!-- ── Navigation ───────────────────────────── -->
-    <nav class="sidebar-nav">
-
-        <div class="nav-label">Menu</div>
-        <ul class="nav-list">
-            <li>
-                <a href="index.php" class="nav-link <?= _custSidebarActive('index') ?>">
-                    <span class="nav-icon"><i class='bx bxs-dashboard'></i></span>
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="orders.php" class="nav-link <?= _custSidebarActive('orders') ?>">
-                    <span class="nav-icon"><i class='bx bx-file'></i></span>
-                    My Orders
-                </a>
-            </li>
-            <li>
-                <a href="order-new.php" class="nav-link <?= _custSidebarActive('order-new') ?>">
-                    <span class="nav-icon"><i class='bx bx-plus-circle'></i></span>
-                    New Order
-                </a>
-            </li>
-            <li>
-                <a href="profile.php" class="nav-link <?= _custSidebarActive('profile') ?>">
-                    <span class="nav-icon"><i class='bx bx-user'></i></span>
-                    My Profile
-                </a>
-            </li>
-        </ul>
-
-        <div class="nav-label" style="margin-top:8px;">Resources</div>
-        <ul class="nav-list">
-            <li>
-                <a href="training.php" class="nav-link <?= _custSidebarActive('training') ?>">
-                    <span class="nav-icon"><i class='bx bx-video'></i></span>
-                    Video Training
-                </a>
-            </li>
-            <li>
-                <a href="priceList.php" class="nav-link <?= _custSidebarActive('priceList') ?>">
-                    <span class="nav-icon"><i class='bx bx-file'></i></span>
-                    Price Lists
-                </a>
-            </li>
-        </ul>
-
-        <div class="nav-label" style="margin-top:8px;">Support</div>
-        <ul class="nav-list">
-            <li>
-                <a href="https://mail.google.com/mail/?view=cm&to=<?php echo urlencode(!empty($adminData['email']) ? $adminData['email'] : 'cs@webkoit.com'); ?>" target="_blank" class="nav-link">
-                    <span class="nav-icon"><i class='bx bx-envelope'></i></span>
-                    Contact Us
-                </a>
-            </li>
-        </ul>
-
-    </nav>
-
-    <!-- ── User footer ───────────────────────────── -->
-    <div class="sidebar-footer">
-        <div class="dropdown dropup">
-            <button class="sidebar-user-btn "
-                aria-expanded="false" type="button">
-                <div class="sidebar-avatar"><?= htmlspecialchars($_initials) ?></div>
-                <div style="flex:1;min-width:0;">
-                    <div class="sidebar-user-name"><?= htmlspecialchars($_cu['name'] ?? 'Customer') ?></div>
-                    <div class="sidebar-user-role">Customer</div>
-                </div>
+        <div class="topbar-right">
+        <div class="dropdown">
+            <button class="topbar-icon-btn" data-bs-toggle="dropdown" title="Notifications">
+                <i class='bx bx-bell'></i>
             </button>
+            <div class="dropdown-menu dropdown-menu-end" style="min-width:280px;">
+                <div class="empty-state py-3" style="padding:20px;">
+                    <i class='bx bx-bell-off empty-state-icon' style="font-size:28px;"></i>
+                    <p class="mb-0 text-muted" style="font-size:12px;">No new notifications</p>
+                </div>
+            </div>
+        </div>
 
+        <div class="topbar-divider"></div>
+
+        <div class="dropdown">
+            <div class="topbar-user dropdown-toggle" data-bs-toggle="dropdown" role="button">
+                <div class="topbar-user-avatar"><?= htmlspecialchars($initials) ?></div>
+                <div class="d-none d-sm-block">
+                    <div class="topbar-user-name"><?= htmlspecialchars($_cu['name'] ?? 'Customer') ?></div>
+                    <div class="topbar-user-role">Customer</div>
+                </div>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <div class="px-3 py-2">
+                        <div style="font-size:13px;font-weight:600;"><?= htmlspecialchars($_cu['name'] ?? 'Customer') ?></div>
+                        <div style="font-size:11px;color:var(--text-sub);"><?= htmlspecialchars($_cu['email'] ?? '') ?></div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="profile"><i class='bx bx-user'></i> My Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="../auth/logout.php"><i class='bx bx-log-out'></i> Sign Out</a></li>
+            </ul>
+        </div>
         </div>
     </div>
+</header>
 
-</aside>
-
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="tabs-nav">
+    <div class="tabs-nav-inner">
+        <?php foreach ($customerTabs as $page => [$icon, $label]): ?>
+            <a href="<?= $page ?>"
+               class="tab-link <?= $activeTab === $page ? 'active' : '' ?>">
+                <?= $label ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</nav>

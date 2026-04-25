@@ -1,6 +1,6 @@
 <?php
 // delete-product.php
-session_start();
+require_once __DIR__ . '/../src/session.php';
 
 // التحقق من تسجيل الدخول
 if (!isset($_SESSION['user_id'])) {
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // الاتصال بقاعدة البيانات
-require_once __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../includes/db.php';
 
 // التحقق من طريقة الطلب
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

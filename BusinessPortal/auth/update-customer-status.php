@@ -1,8 +1,8 @@
 <?php
 // auth/update-customer-status.php
-session_start();
+require_once __DIR__ . '/../src/session.php';
 include __DIR__ . '/auth-check.php';
-include __DIR__ . '/../partials/conn.php';
+require_once __DIR__ . '/../includes/db.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $status = $_GET['status'] ?? '';

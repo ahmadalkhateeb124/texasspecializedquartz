@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Texas Specialized Quartz & Granite — Sinks</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <!-- Site fonts loaded by parts/header.php (theme-2026.css) -->
     <style>
         *{box-sizing:border-box;margin:0;padding:0;}
 
@@ -16,7 +16,7 @@
             padding:2.5rem 1.5rem 1rem;
         }
         .stone-hero h1{
-            font-family:'Instrument Serif',serif;
+            font-family:var(--tx-serif);
             font-size:clamp(38px,4vw,52px);
             font-weight:400;
             line-height:1.25;
@@ -24,7 +24,7 @@
             margin-bottom:1rem;
         }
         .stone-hero h1 em{
-            font-style:italic;
+            font-style:normal;
             color:#999999;
         }
         .stone-hero p{
@@ -90,7 +90,7 @@
             border-radius:50px;
             border:1.5px solid #d8d2c8;
             background:transparent;
-            font-family:'DM Sans',sans-serif;
+            font-family:var(--tx-sans);
             font-size:13px;
             font-weight:500;
             color:#5c5650;
@@ -126,7 +126,7 @@
             margin-bottom:.35rem;
         }
         .section-header h2{
-            font-family:'Instrument Serif',serif;
+            font-family:var(--tx-serif);
             font-size:22px;
             font-weight:400;
             color:#1a1814;
@@ -251,7 +251,7 @@
 </header>
 <!-- HERO -->
 <div class="stone-hero">
-    <h1>Premium Undermount Sinks —<br><em>Stainless Steel</em>, <em>Composite</em> & <em>Ceramic</em></h1>
+    <h2>Premium Undermount Sinks —<br><em>Stainless Steel</em>, <em>Composite</em> & <em>Ceramic</em></h2>
     <p>At <strong>Texas Specialized Quartz & Granite</strong>, we offer a curated selection of undermount sinks designed to complement your countertop perfectly — from stainless steel kitchen sinks and granite composite bowls to elegant ceramic bathroom basins.</p>
     <p>Our sinks are built for durability, easy maintenance, and seamless integration with natural stone and engineered surfaces. Available in single bowl, double bowl, workstation, and modern corner styles.</p>
     <div class="phone-link">

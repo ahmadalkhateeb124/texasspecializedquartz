@@ -47,8 +47,7 @@ theme.
 
 
 */
-/* GOOGLE FONTS */
-@import url("https://fonts.googleapis.com/css?family=Playfair+Display|Poppins:300,400,600,800&display=swap&subset=latin-ext");
+/* GOOGLE FONTS — loaded via theme-2026.css (Fraunces + Inter) */
 /* BODY */
 * {
   outline: none !important;
@@ -68,7 +67,7 @@ theme.
 body {
   margin: 0;
   padding: 0;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   color: #26282b;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -993,14 +992,14 @@ button[type="submit"] {
 .slider .slider-container .hero-slide .container h1 {
   font-size: 5vw;
   color: #fff;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   color: #dddddd;
   margin-bottom: 20px;
 }
 .slider .slider-container .hero-slide .container h3 {
   font-size: 5vw;
   color: #fff;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   color: #dddddd;
   margin-bottom: 20px;
 }
@@ -1270,7 +1269,7 @@ button[type="submit"] {
   letter-spacing: -0.5px;
 
   /* Luxury font styling */
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   font-weight: 700;
   margin: 0;
   margin-bottom: 10px;
@@ -1304,7 +1303,7 @@ button[type="submit"] {
   letter-spacing: 0.3px;
   margin: 0;
   font-weight: 300;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
 }
 
 /* LUXURY BREADCRUMB NAVIGATION */
@@ -1348,7 +1347,7 @@ button[type="submit"] {
 /* BREADCRUMB ITEM - Individual Items */
 .page-header .container .breadcrumb .breadcrumb-item {
   font-size: 12px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.85);
   text-transform: capitalize;
@@ -1462,7 +1461,7 @@ button[type="submit"] {
 .intro .content-box h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .intro .content-box h4 span {
@@ -1574,7 +1573,7 @@ button[type="submit"] {
 .benefits h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .benefits h4 span {
@@ -1639,7 +1638,7 @@ button[type="submit"] {
 .recent-gallery h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .recent-gallery h4 span {
@@ -1754,7 +1753,7 @@ button[type="submit"] {
 .property-calculator .content-box h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .property-calculator .content-box h4 span {
@@ -1816,7 +1815,7 @@ button[type="submit"] {
 .property-plans h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .property-plans h4 span {
@@ -1907,7 +1906,7 @@ button[type="submit"] {
 .get-consultation h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .get-consultation h4 span {
@@ -1965,7 +1964,7 @@ button[type="submit"] {
 .recent-posts h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .recent-posts h4 span {
@@ -2041,7 +2040,7 @@ button[type="submit"] {
 .property-customization h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .property-customization h4 span {
@@ -2079,7 +2078,7 @@ button[type="submit"] {
 }
 .apartment h2 {
   font-size: 4vw;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 20px;
 }
 .apartment h2 span {
@@ -2181,7 +2180,7 @@ button[type="submit"] {
 }
 .about-content h2 {
   font-size: 4vw;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 20px;
 }
 .about-content h2 span {
@@ -2262,7 +2261,7 @@ button[type="submit"] {
 .certificates h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .certificates h4 span {
@@ -2310,7 +2309,7 @@ button[type="submit"] {
 .facilities h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .facilities h4 span {
@@ -2384,7 +2383,7 @@ button[type="submit"] {
 }
 .faq .sidebox h3 {
   display: block;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 20px;
 }
 .faq .sidebox p {
@@ -2407,7 +2406,7 @@ button[type="submit"] {
   border: 1px solid #eee;
 }
 .sales-offices .office-box h5 {
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 20px;
   font-size: 26px;
 }
@@ -2448,7 +2447,7 @@ button[type="submit"] {
 .intro-video h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .intro-video h4 span {
@@ -2498,7 +2497,7 @@ button[type="submit"] {
 .press-relases figure figcaption h5 {
   display: block;
   font-size: 22px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .press-relases figure figcaption p {
@@ -2587,7 +2586,7 @@ button[type="submit"] {
 .sales-team figure figcaption h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .sales-team figure figcaption h4 span {
@@ -2831,7 +2830,7 @@ button[type="submit"] {
 .blog .sidebar .widget .title {
   width: 100%;
   display: block;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 20px;
 }
 .blog .sidebar .widget .categories {
@@ -2950,7 +2949,7 @@ button[type="submit"] {
 .contact h4 {
   display: block;
   font-size: 30px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   margin-bottom: 15px;
 }
 .contact h4 span {
@@ -3129,7 +3128,7 @@ button[type="submit"] {
   height: 70px;
 }
 .footer-bar .inner h3 {
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
   font-size: 22px;
   margin-bottom: 15px;
 }
@@ -3243,7 +3242,7 @@ button[type="submit"] {
 .footer .contact-box h5 {
   margin-bottom: 10px;
   font-size: 19px;
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
 }
 .footer .contact-box h3 {
   font-weight: 600;
@@ -3884,7 +3883,7 @@ ul.submenu {
   width: 100%;
 }
 .post-tags {
-  font-family: "Playfair Display", Georgia, serif !important;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif !important;
 }
 
 .post-tags .tag {

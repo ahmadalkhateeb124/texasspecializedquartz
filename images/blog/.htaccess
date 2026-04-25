@@ -1,0 +1,29 @@
+# Block PHP/script execution in this folder.
+# Allow only image files to be served.
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+# Disable any handler — even if PHP is loaded as CGI/FastCGI
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar .cgi .pl .py .jsp .asp .aspx .sh .exe
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar
+
+# Hard block by extension as a second line of defense
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|pht|phar|cgi|pl|py|jsp|asp|aspx|sh|exe|htaccess|htpasswd|ini|log|sql|conf)$">
+    Require all denied
+</FilesMatch>
+
+# Force safe content-type & disposition for served files
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Security-Policy "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'"
+</IfModule>
+
+Options -ExecCGI -Indexes

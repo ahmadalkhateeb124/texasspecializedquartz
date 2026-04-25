@@ -4,7 +4,7 @@
  * Update Price List Handler
  */
 
-session_start();
+require_once __DIR__ . '/../src/session.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/pricelist-db.php';

@@ -1,0 +1,25 @@
+# Block PHP/script execution in this folder.
+# Allow video files (mp4, webm, mov) to be served.
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar .cgi .pl .py .jsp .asp .aspx .sh .exe
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar
+
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|php8|pht|phar|cgi|pl|py|jsp|asp|aspx|sh|exe|htaccess|htpasswd|ini|log|sql|conf)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+Options -ExecCGI -Indexes

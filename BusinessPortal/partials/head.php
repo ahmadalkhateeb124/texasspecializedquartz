@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../partials/conn.php';
-session_start();
+require_once __DIR__ . '/../src/session.php';
 
 $user_id    = $_SESSION['user_id'] ?? null;
 $account_id = $_SESSION['account_id'] ?? null;

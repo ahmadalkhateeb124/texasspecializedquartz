@@ -1,0 +1,89 @@
+/* admin order-form — job type cards, form section labels, summary chips */
+
+.job-type-card {
+    position: relative;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .18s, background .18s, box-shadow .18s;
+    user-select: none;
+    background: var(--color-surface);
+}
+
+.job-type-card:hover {
+    border-color: var(--color-primary);
+    background: #e6f7f5;
+}
+
+.job-type-card.active {
+    border-color: var(--color-primary);
+    background: #d1f0ec;
+    box-shadow: 0 0 0 3px rgba(15, 118, 110, .12);
+}
+
+.job-card-icon {
+    font-size: 28px;
+    color: var(--color-primary);
+    margin-bottom: 6px;
+    line-height: 1;
+}
+
+.job-type-card:not(.active) .job-card-icon {
+    color: var(--color-text-sub);
+}
+
+.job-card-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-text);
+}
+
+.job-card-desc {
+    font-size: 11px;
+    color: var(--color-text-sub);
+    margin-top: 2px;
+}
+
+.job-card-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 12px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.job-type-card.active .job-card-check {
+    display: flex;
+}
+
+.form-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-text-sub);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.summary-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--color-primary-l, #d1f0ec);
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 500;
+}
