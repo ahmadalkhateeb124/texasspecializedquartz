@@ -1,5 +1,5 @@
     <footer class="page-footer" style="text-align:center;padding:20px;color:var(--text-sub);font-size:12px;border-top:1px solid var(--border);margin-top:40px;">
-        <span>© <script>document.write(new Date().getFullYear())</script> Texas Specialized Quartz &amp; Granite. All rights reserved.</span>
+        <span>© 2026 Texas Specialized Quartz &amp; Granite. All rights reserved. Developed by <a href="https://webkoit.com/" target="_blank" rel="noopener" style="color:var(--brand,#b08d57);text-decoration:none;font-weight:600;">Webkoit</a></span>
     </footer>
 
     </div><!-- /.main-wrapper -->

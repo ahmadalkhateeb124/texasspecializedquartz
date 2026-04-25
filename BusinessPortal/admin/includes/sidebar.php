@@ -68,6 +68,9 @@ foreach ($tabAliases as $tab => $aliases) {
 <!-- ── Top brand bar ───────────────────────────────────────── -->
 <header class="topbar">
     <div class="topbar-inner">
+        <button type="button" class="tn-toggle" aria-label="Open menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
         <a href="index" class="topbar-brand">
             <img src="/images/Granit-Img/logo.png" alt="">
             <span class="topbar-brand-name">Texas Specialized Quartz &amp; Granite</span>
@@ -121,9 +124,16 @@ foreach ($tabAliases as $tab => $aliases) {
     </div>
 </header>
 
-<!-- ── Horizontal tabs navigation ──────────────────────────── -->
-<nav class="tabs-nav">
+<!-- ── Backdrop (mobile drawer) ────────────────────────────── -->
+<div class="tn-backdrop" aria-hidden="true"></div>
+
+<!-- ── Tabs navigation (horizontal on desktop, side drawer on mobile) -->
+<nav class="tabs-nav" aria-label="Sections">
     <div class="tabs-nav-inner">
+        <div class="tn-drawer-head">
+            <span class="tn-drawer-title">Menu</span>
+            <button type="button" class="tn-close" aria-label="Close menu">&times;</button>
+        </div>
         <?php foreach ($adminTabs as $page => [$icon, $label]): ?>
             <a href="<?= $page ?>"
                class="tab-link <?= $activeTab === $page ? 'active' : '' ?>">
@@ -132,3 +142,25 @@ foreach ($tabAliases as $tab => $aliases) {
         <?php endforeach; ?>
     </div>
 </nav>
+
+<script>
+(function () {
+    var btn = document.querySelector('.tn-toggle');
+    var bd  = document.querySelector('.tn-backdrop');
+    var cl  = document.querySelector('.tn-close');
+    if (!btn) return;
+    function open()  { document.body.classList.add('tn-open');    btn.setAttribute('aria-expanded','true');  }
+    function close() { document.body.classList.remove('tn-open'); btn.setAttribute('aria-expanded','false'); }
+    btn.addEventListener('click', function () {
+        document.body.classList.contains('tn-open') ? close() : open();
+    });
+    if (bd) bd.addEventListener('click', close);
+    if (cl) cl.addEventListener('click', close);
+    // Close drawer when a tab is clicked (so the user actually navigates)
+    document.querySelectorAll('.tabs-nav .tab-link').forEach(function (a) {
+        a.addEventListener('click', close);
+    });
+    // Close on ESC
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
