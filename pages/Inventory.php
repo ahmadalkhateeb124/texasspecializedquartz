@@ -99,19 +99,52 @@
       </article>
     <?php endforeach; ?>
     </div>
+
+    <div class="inv-more" hidden>
+      <p class="inv-more-count" aria-live="polite"></p>
+      <button type="button" class="inv-more-btn">Show more slabs</button>
+    </div>
   </div>
 </section>
 
 <script>
-document.querySelectorAll('.inv-filter').forEach(function (btn) {
-  btn.addEventListener('click', function () {
-    var f = btn.dataset.filter;
-    document.querySelectorAll('.inv-filter').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
-    document.querySelectorAll('.inv-card').forEach(function (card) {
-      card.hidden = f !== 'all' && card.dataset.material !== f;
+(function () {
+  var PAGE = 12;                       // slabs shown per "Show more" click
+  var cards   = Array.prototype.slice.call(document.querySelectorAll('.inv-card'));
+  var filters = document.querySelectorAll('.inv-filter');
+  var more    = document.querySelector('.inv-more');
+  var count   = document.querySelector('.inv-more-count');
+  var filter  = 'all';
+  var limit   = PAGE;
+
+  function render() {
+    var matches = cards.filter(function (c) { return filter === 'all' || c.dataset.material === filter; });
+    cards.forEach(function (c) { c.hidden = true; });
+    matches.forEach(function (c, i) { c.hidden = i >= limit; });
+
+    var shown = Math.min(limit, matches.length);
+    more.hidden = shown >= matches.length;
+    count.textContent = 'Showing ' + shown + ' of ' + matches.length + ' slabs';
+  }
+
+  filters.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      filter = btn.dataset.filter;
+      limit  = PAGE;
+      filters.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+      render();
     });
   });
-});
+
+  document.querySelector('.inv-more-btn').addEventListener('click', function () {
+    var firstNew = cards.filter(function (c) { return filter === 'all' || c.dataset.material === filter; })[limit];
+    limit += PAGE;
+    render();
+    if (firstNew) firstNew.querySelector('.inv-cta').focus({ preventScroll: true });
+  });
+
+  render();
+})();
 </script>
 
 </body>
