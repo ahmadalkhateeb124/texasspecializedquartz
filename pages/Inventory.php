@@ -40,40 +40,79 @@
       </div>
     </div>
 
-    <!-- ══════════ GRANITE ══════════ -->
-    <div class="stone-section-head">
-      <h2>All Inventory</h2>
-      <span class="slab-count">+10 slabs available</span>
-    </div>
-    <div class="stone-divider"></div>
- <div class="row g-4">
-<?php
-require_once __DIR__ . '/../BusinessPortal/src/bootstrap.php';
-$slabs = (new InventorySlabRepository($pdo))->allActive();
-$imgFallback = 'onerror="this.parentElement.innerHTML=\'<div class=\\\'img-placeholder\\\'><svg width=\\\'36\\\' height=\\\'36\\\' viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'#bbb\\\' stroke-width=\\\'1\\\'><rect x=\\\'3\\\' y=\\\'3\\\' width=\\\'18\\\' height=\\\'18\\\' rx=\\\'2\\\'/><circle cx=\\\'8.5\\\' cy=\\\'8.5\\\' r=\\\'1.5\\\'/><path d=\\\'M21 15l-5-5L5 21\\\'/></svg></div>\'"';
-?>
-<?php foreach ($slabs as $slab): ?>
-      <div class="col-lg-4 col-md-6 mb-3">
-        <div class="stone-card">
-          <div class="img-wrap">
-            <img src="<?= htmlspecialchars($slab['image']) ?>"
-                 alt="<?= htmlspecialchars($slab['name']) ?>" loading="lazy"
-                 <?= $imgFallback ?>>
-            <span class="qty-badge">Availability <?= (int)$slab['quantity'] ?> slabs</span>
-          </div>
-          <div class="stone-info">
-            <h4><?= htmlspecialchars($slab['name']) ?></h4>
-            <div class="stone-meta">
-              <span class="tag"><?= htmlspecialchars($slab['name']) ?></span>
-              <span class="tag size"><?= htmlspecialchars($slab['size']) ?></span>
-            </div>
-          </div>
-        </div>
+    <?php
+    require_once __DIR__ . '/../BusinessPortal/src/bootstrap.php';
+    $slabs = (new InventorySlabRepository($pdo))->allActive();
+    $materials = array_values(array_unique(array_filter(array_column($slabs, 'material_type'))));
+    ?>
+
+    <!-- ══════════ INVENTORY ══════════ -->
+    <div class="inv-head">
+      <div>
+        <span class="inv-eyebrow">In stock now</span>
+        <h2>All Inventory</h2>
       </div>
+      <span class="inv-count"><?= count($slabs) ?> slabs available</span>
+    </div>
+
+    <?php if (count($materials) > 1): ?>
+    <div class="inv-filters" role="group" aria-label="Filter by material">
+      <button type="button" class="inv-filter is-active" data-filter="all">All</button>
+      <?php foreach ($materials as $m): ?>
+      <button type="button" class="inv-filter" data-filter="<?= htmlspecialchars($m) ?>"><?= htmlspecialchars(ucfirst($m)) ?></button>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
+    <div class="inv-grid">
+    <?php foreach ($slabs as $slab):
+      $qty = (int)$slab['quantity'];
+      $name = htmlspecialchars($slab['name']);
+      $img = htmlspecialchars($slab['image']);
+      $material = htmlspecialchars($slab['material_type']);
+    ?>
+      <article class="inv-card" data-material="<?= $material ?>">
+        <a class="inv-media" href="<?= $img ?>" data-fancybox="inventory" data-caption="<?= $name ?> · <?= htmlspecialchars($slab['size']) ?>">
+          <img src="<?= $img ?>" alt="<?= $name ?>" loading="lazy"
+               onerror="this.remove()">
+          <span class="inv-material"><?= htmlspecialchars(ucfirst($slab['material_type'])) ?></span>
+          <span class="inv-zoom" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+          </span>
+        </a>
+        <div class="inv-body">
+          <div class="inv-title">
+            <h3><?= $name ?></h3>
+            <span class="inv-stock<?= $qty <= 5 ? ' is-low' : '' ?>">
+              <i></i><?= $qty ?> <?= $qty === 1 ? 'slab' : 'slabs' ?> left
+            </span>
+          </div>
+          <dl class="inv-specs">
+            <div><dt>Thickness</dt><dd><?= htmlspecialchars($slab['size']) ?></dd></div>
+            <div><dt>Material</dt><dd><?= htmlspecialchars(ucfirst($slab['material_type'])) ?></dd></div>
+          </dl>
+          <a class="inv-cta" href="<?= $base_url ?>contact">
+            Request a quote
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </article>
     <?php endforeach; ?>
     </div>
   </div>
 </section>
+
+<script>
+document.querySelectorAll('.inv-filter').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var f = btn.dataset.filter;
+    document.querySelectorAll('.inv-filter').forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+    document.querySelectorAll('.inv-card').forEach(function (card) {
+      card.hidden = f !== 'all' && card.dataset.material !== f;
+    });
+  });
+});
+</script>
 
 </body>
 </html>
