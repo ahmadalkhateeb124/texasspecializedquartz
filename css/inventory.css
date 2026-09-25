@@ -51,146 +51,243 @@
   color:#1a1814;
 }
 
-/* ── SECTION HEADER ── */
-.stone-section-head{
+/* ── INVENTORY HEADER ── */
+.inv-head{
   display:flex;
-  align-items:baseline;
-  gap:12px;
-  margin:3rem 0 1.5rem;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin:3.5rem 0 1.5rem;
+  padding-bottom:1.25rem;
+  border-bottom:1px solid #e8e2d9;
 }
-.stone-section-head h2{
-  font-size:22px;
-  font-weight:500;
+.inv-eyebrow{
+  display:block;
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:#a8987a;
+  margin-bottom:6px;
+}
+.inv-head h2{
+  font-size:30px;
+  font-weight:600;
   color:#1a1814;
   margin:0;
+  line-height:1.1;
 }
-.stone-section-head .slab-count{
+.inv-count{
   font-size:13px;
-  color:#8c877f;
-}
-.stone-divider{
-  height:1px;
-  background:#e8e2d9;
-  margin-bottom:1.75rem;
+  color:#6b6560;
+  background:#f4f1ec;
+  padding:6px 14px;
+  border-radius:999px;
+  white-space:nowrap;
 }
 
-/* ── SUB SECTION ── */
-.stone-sub-head{
+/* ── FILTERS ── */
+.inv-filters{
   display:flex;
-  align-items:center;
-  gap:10px;
-  margin:2.5rem 0 1.5rem;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:2rem;
 }
-.stone-sub-head::before{
-  content:'';
-  width:3px;
-  height:20px;
-  background:#999999;
-  border-radius:2px;
-  flex-shrink:0;
-}
-.stone-sub-head h3{
-  font-size:17px;
+.inv-filter{
+  font:inherit;
+  font-size:13px;
   font-weight:500;
-  color:#1a1814;
-  margin:0;
+  color:#4a453f;
+  background:transparent;
+  border:1px solid #ddd5c8;
+  padding:8px 18px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.inv-filter:hover{border-color:#1a1814;}
+.inv-filter.is-active{
+  background:#1a1814;
+  border-color:#1a1814;
+  color:#fff;
 }
 
-/* ── STONE CARD ── */
-.stone-card{
+/* ── GRID ── */
+.inv-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:32px;
+}
+.inv-card[hidden]{display:none;}
+
+/* ── CARD ── */
+.inv-card{
+  display:flex;
+  flex-direction:column;
   background:#fff;
-  border:1px solid #e8e2d9;
-  border-radius:12px;
+  border-radius:18px;
   overflow:hidden;
-  transition:border-color .2s, box-shadow .2s;
-  height:100%;
+  box-shadow:0 1px 2px rgba(26,24,20,.06), 0 8px 28px rgba(26,24,20,.07);
+  transition:transform .35s ease, box-shadow .35s ease;
 }
-.stone-card:hover{
-  border-color:#c4b89a;
-  box-shadow:0 4px 20px rgba(0,0,0,.07);
+.inv-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 2px 4px rgba(26,24,20,.06), 0 18px 44px rgba(26,24,20,.13);
 }
-.stone-card .img-wrap{
+
+/* wide slab-shaped image */
+.inv-media{
   position:relative;
-  aspect-ratio:4/3;
-  background:#f7f4f0;
+  display:block;
+  aspect-ratio:2/1;
   overflow:hidden;
+  background:#efebe5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24' fill='none' stroke='%23c9c1b4' stroke-width='1'%3E%3Crect x='3' y='3' width='18' height='18' rx='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpath d='M21 15l-5-5L5 21'/%3E%3C/svg%3E") center/40px no-repeat;
+  cursor:zoom-in;
 }
-.stone-card .img-wrap img{
+.inv-media img{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  display:block;
-  transition:transform .4s ease;
+  transition:transform .8s cubic-bezier(.2,.7,.2,1);
 }
-.stone-card:hover .img-wrap img{
-  transform:scale(1.04);
-}
-.stone-card .qty-badge{
+.inv-card:hover .inv-media img{transform:scale(1.06);}
+.inv-media::after{
+  content:'';
   position:absolute;
-  top:10px;
-  right:10px;
-  background:rgba(0,0,0,.52);
+  inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 35%);
+  pointer-events:none;
+}
+.inv-material{
+  position:absolute;
+  z-index:1;
+  top:16px;
+  left:16px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
   color:#fff;
+  padding:6px 12px;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:999px;
+  background:rgba(0,0,0,.18);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.inv-zoom{
+  position:absolute;
+  z-index:1;
+  top:14px;
+  right:14px;
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  color:#1a1814;
+  background:rgba(255,255,255,.92);
+  border-radius:50%;
+  opacity:0;
+  transform:scale(.8);
+  transition:opacity .25s, transform .25s;
+}
+.inv-card:hover .inv-zoom{opacity:1;transform:scale(1);}
+
+/* body */
+.inv-body{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  padding:22px 24px 24px;
+  flex:1;
+}
+.inv-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.inv-title h3{
+  font-size:20px;
+  font-weight:600;
+  color:#1a1814;
+  margin:0;
+  line-height:1.25;
+}
+.inv-stock{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  flex-shrink:0;
+  font-size:12px;
+  font-weight:500;
+  color:#2f6b3f;
+  background:#eaf4ec;
+  padding:5px 11px;
+  border-radius:999px;
+}
+.inv-stock i{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+}
+.inv-stock.is-low{color:#9a5b12;background:#fbf0e1;}
+
+.inv-specs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  margin:0;
+  border-top:1px solid #efe9e0;
+  border-bottom:1px solid #efe9e0;
+}
+.inv-specs > div{padding:12px 0;}
+.inv-specs > div + div{padding-left:18px;border-left:1px solid #efe9e0;}
+.inv-specs dt{
   font-size:11px;
   font-weight:500;
-  padding:3px 9px;
-  border-radius:20px;
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#9a9288;
+  margin-bottom:3px;
 }
-.stone-card .img-placeholder{
-  width:100%;
-  height:100%;
-  display:flex;
+.inv-specs dd{
+  font-size:15px;
+  font-weight:500;
+  color:#1a1814;
+  margin:0;
+}
+
+.inv-cta{
+  margin-top:auto;
+  display:inline-flex;
   align-items:center;
-  justify-content:center;
-}
-.stone-card .img-placeholder svg{opacity:.18;}
-.stone-card .stone-info{
-  padding:.875rem 1rem 1rem;
-}
-.stone-card .stone-info h4{
+  justify-content:space-between;
+  gap:10px;
   font-size:14px;
   font-weight:600;
   color:#1a1814;
-  margin:0 0 .5rem;
+  text-decoration:none;
+  padding:13px 18px;
+  border:1px solid #1a1814;
+  border-radius:10px;
+  transition:background .2s, color .2s;
 }
-.stone-meta{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-.stone-meta .tag{
-  font-size:11px;
-  color:#6b6560;
-  background:#f7f4f0;
-  padding:2px 9px;
-  border-radius:20px;
-}
-.stone-meta .tag.size{
-  color:#999999;
-  background:#f5ede2;
-}
-
-/* ── QUARTZITE NO-IMAGE ── */
-.no-img-card{
-  background:#f7f4f0;
-  border-radius:12px;
-  border:1px solid #e8e2d9;
-  aspect-ratio:4/3;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.no-img-card span{
-  font-size:13px;
-  color:#8c877f;
-}
+.inv-cta svg{transition:transform .2s;}
+.inv-cta:hover{background:#1a1814;color:#fff;text-decoration:none;}
+.inv-cta:hover svg{transform:translateX(4px);}
 
 @media(max-width:767px){
   .features-strip{grid-template-columns:1fr 1fr;}
-  .stone-section-head h2{font-size:18px;}
+  .inv-grid{grid-template-columns:1fr;gap:24px;}
+  .inv-head{margin-top:2.5rem;}
+  .inv-head h2{font-size:24px;}
 }
 @media(max-width:480px){
   .features-strip{grid-template-columns:1fr;}
+  .inv-head{flex-direction:column;align-items:flex-start;}
+  .inv-body{padding:18px;}
+  .inv-title{flex-direction:column;}
+  .inv-zoom{opacity:1;transform:none;}
 }
