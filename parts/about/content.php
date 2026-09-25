@@ -125,10 +125,11 @@
                                 Tell us about your project — kitchen, bathroom, or commercial. Our team will reach out with material ideas, timelines, and a free, no-pressure estimate.
                             </p>
                             <ul class="contact-side-list">
-                                <li><i class="fas fa-map-marker-alt"></i> 1225 W College Ave #616, Carrollton, TX 75006</li>
+                                <li><i class="fas fa-map-marker-alt"></i> 
+2943 Ladybird Ln, Dallas, TX 75220, United States</li>
                                 <li><i class="fas fa-phone"></i> <a href="tel:+14698140555">(469) 814-0555</a></li>
                                 <li><i class="fas fa-envelope"></i> <a href="mailto:Cs@TexasSpecializedQuartz.com">Cs@TexasSpecializedQuartz.com</a></li>
-                                <li><i class="far fa-clock"></i> Mon–Fri 9am–6pm · Sat 9am–3pm</li>
+                                <li><i class="far fa-clock"></i> Mon–Fri: 9:00 AM – 5:00 PM | Sat: 11:00 AM – 2:00 PM | Sun: Closed</li>
                             </ul>
                         </div>
                     </div>

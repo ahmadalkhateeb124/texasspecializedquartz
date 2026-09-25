@@ -8,6 +8,9 @@
 /* Hardened session bootstrap (sets secure cookie flags before session_start) */
 require_once __DIR__ . '/session.php';
 
+/* App helpers: bp_url(), site_asset(), site_path(), bp_root_path() */
+require_once __DIR__ . '/../config/app.php';
+
 spl_autoload_register(function (string $class): void {
     // Only handle unprefixed app classes (skip PHPMailer's namespaced classes).
     if (str_contains($class, '\\')) {

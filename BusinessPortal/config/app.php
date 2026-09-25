@@ -50,3 +50,41 @@ if (!function_exists('bp_url')) {
         return $protocol . $host . bp_web_base() . '/' . ltrim($path, '/');
     }
 }
+
+if (!function_exists('site_web_base')) {
+    /**
+     * Web base for the SITE root (one level above BusinessPortal).
+     *   Local: "/texasspecializedquartz"
+     *   Live:  ""  (empty when site lives at domain root)
+     */
+    function site_web_base(): string
+    {
+        return preg_replace('~/BusinessPortal$~', '', bp_web_base());
+    }
+}
+
+if (!function_exists('site_asset')) {
+    /**
+     * Root-relative URL for an asset under the site root (images/, css/, etc.).
+     * Works in both local (subfolder) and production (domain root) layouts.
+     *   site_asset('images/blog/foo.jpg')
+     *     → /texasspecializedquartz/images/blog/foo.jpg  (local)
+     *     → /images/blog/foo.jpg                          (prod)
+     */
+    function site_asset(string $path): string
+    {
+        return site_web_base() . '/' . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('site_path')) {
+    /**
+     * Absolute filesystem path for an asset under the site root.
+     *   site_path('images/blog/foo.jpg')
+     *     → /Applications/.../texasspecializedquartz/images/blog/foo.jpg
+     */
+    function site_path(string $path): string
+    {
+        return realpath(__DIR__ . '/../..') . '/' . ltrim($path, '/');
+    }
+}

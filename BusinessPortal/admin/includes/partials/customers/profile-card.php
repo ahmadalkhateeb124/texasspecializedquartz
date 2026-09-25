@@ -8,7 +8,7 @@ $badgeHtml = match ($status) {
 ?>
 <div class="card mb-4">
     <div class="card-section text-center" style="padding-top:2rem;">
-        <div style="width:72px;height:72px;border-radius:50%;background:#8b6f4e;
+        <div style="width:72px;height:72px;border-radius:50%;background:#000000;
                     display:flex;align-items:center;justify-content:center;
                     color:#fff;font-size:28px;font-weight:700;margin:0 auto 12px;">
             <?= htmlspecialchars($initials) ?>

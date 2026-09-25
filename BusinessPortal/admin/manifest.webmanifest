@@ -1,0 +1,56 @@
+{
+  "name": "Texas Specialized Quartz — Admin Portal",
+  "short_name": "TSQG Admin",
+  "description": "Admin dashboard for Texas Specialized Quartz & Granite — orders, customers, inventory, blog and more.",
+  "start_url": "/BusinessPortal/admin/index",
+  "scope": "/BusinessPortal/admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1a1814",
+  "background_color": "#ffffff",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/images/Granit-Img/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/Granit-Img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/Granit-Img/logo-gg.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Orders",
+      "short_name": "Orders",
+      "url": "/BusinessPortal/admin/orders"
+    },
+    {
+      "name": "Customers",
+      "short_name": "Customers",
+      "url": "/BusinessPortal/admin/customers"
+    },
+    {
+      "name": "Calendar",
+      "short_name": "Calendar",
+      "url": "/BusinessPortal/admin/calendar"
+    },
+    {
+      "name": "Inbox",
+      "short_name": "Inbox",
+      "url": "/BusinessPortal/admin/inquiries"
+    }
+  ]
+}

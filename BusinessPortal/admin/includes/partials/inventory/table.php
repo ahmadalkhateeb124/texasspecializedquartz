@@ -42,8 +42,8 @@ $siteRoot = realpath(__DIR__ . '/../../../../..');
                 </thead>
                 <tbody id="slabsTbody">
                     <?php foreach ($slabs as $s):
-                        $imgWebPath = '/texasspecializedquartz/' . ltrim($s['image'], '/');
-                        $hasImg = !empty($s['image']) && $siteRoot && file_exists($siteRoot . '/' . ltrim($s['image'], '/'));
+                        $imgWebPath = site_asset(ltrim($s['image'] ?? '', '/'));
+                        $hasImg = !empty($s['image']) && file_exists(site_path(ltrim($s['image'], '/')));
                     ?>
                         <tr data-material="<?= htmlspecialchars($s['material_type']) ?>">
                             <td>

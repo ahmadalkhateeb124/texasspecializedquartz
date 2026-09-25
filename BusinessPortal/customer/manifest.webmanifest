@@ -1,0 +1,56 @@
+{
+  "name": "Texas Specialized Quartz — Customer Portal",
+  "short_name": "TSQG Portal",
+  "description": "Customer portal for Texas Specialized Quartz & Granite — submit orders, download price lists, watch training videos.",
+  "start_url": "/BusinessPortal/customer/index",
+  "scope": "/BusinessPortal/customer/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1a1814",
+  "background_color": "#ffffff",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["business"],
+  "icons": [
+    {
+      "src": "/images/Granit-Img/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/Granit-Img/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/Granit-Img/logo-gg.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Order",
+      "short_name": "New Order",
+      "url": "/BusinessPortal/customer/order-new"
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "url": "/BusinessPortal/customer/orders"
+    },
+    {
+      "name": "Price Lists",
+      "short_name": "Price Lists",
+      "url": "/BusinessPortal/customer/priceList"
+    },
+    {
+      "name": "Training",
+      "short_name": "Training",
+      "url": "/BusinessPortal/customer/training"
+    }
+  ]
+}

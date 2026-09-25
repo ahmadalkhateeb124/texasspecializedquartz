@@ -401,49 +401,6 @@ $simpleProducts = [
         "inStock" => true
     ],
     
-    // ══════════ OUT OF STOCK PRODUCTS (المعطلة) ══════════
-    [
-        "name" => "Colonial White 3cm Granite",
-        "quantity" => 0,
-        "color" => "Colonial White",
-        "size" => "120×78",
-        "material" => "Granite",
-        "finish" => "Polished",
-        "origin" => "India",
-        "price" => "Currently Unavailable",
-        "image" => "$DOMAIN/BusinessPortal/assets/products/product_1774730654_ad94591b6ac2eb42.jpg",
-        "ratingValue" => 4.3,
-        "reviewCount" => 5,
-        "inStock" => false
-    ],
-    [
-        "name" => "Giallo Ornamental Rem",
-        "quantity" => 0,
-        "color" => "Giallo Ornamental",
-        "size" => "118×75",
-        "material" => "Granite",
-        "finish" => "Polished",
-        "origin" => "Brazil",
-        "price" => "Currently Unavailable",
-        "image" => "$DOMAIN/BusinessPortal/assets/products/product_1774787226_69c91a9a442db.jpg",
-        "ratingValue" => 4.4,
-        "reviewCount" => 6,
-        "inStock" => false
-    ],
-    [
-        "name" => "Vena Carbona",
-        "quantity" => 0,
-        "color" => "Vena Carbona",
-        "size" => "116×80",
-        "material" => "Quartzite",
-        "finish" => "Polished",
-        "origin" => "Brazil",
-        "price" => "Currently Unavailable",
-        "image" => "$DOMAIN/BusinessPortal/assets/products/product_1774730387_c617b6a71a951df5.jpg",
-        "ratingValue" => 4.5,
-        "reviewCount" => 4,
-        "inStock" => false
-    ],
 ];
 
 // ═══════════════════════════════════════
@@ -484,12 +441,12 @@ foreach ($simpleProducts as $product) {
         "color" => $product["color"],
         "category" => "Home & Garden > Kitchen & Dining > Countertops > Natural Stone Slabs",
         "url" => "$DOMAIN/NaturalSlabs",
-        "offers" => [
+        "offers" => $product['inStock'] ? [
             "@type" => "Offer",
             "price" => "0",
             "priceCurrency" => "USD",
             "priceValidUntil" => "2026-12-31",
-            "availability" => $product['inStock'] ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            "availability" => "https://schema.org/InStock",
             "itemCondition" => "https://schema.org/NewCondition",
             "url" => "$DOMAIN/NaturalSlabs",
             "seller" => [
@@ -532,7 +489,23 @@ foreach ($simpleProducts as $product) {
                 "merchantReturnDays" => 14,
                 "returnMethod" => "https://schema.org/ReturnByMail",
                 "returnFees" => "https://schema.org/FreeReturn"
-            ]
+            ],
+        ] : [
+            "@type" => "Offer",
+            "availability" => "https://schema.org/OutOfStock",
+            "itemCondition" => "https://schema.org/NewCondition",
+            "url" => "$DOMAIN/NaturalSlabs",
+            "priceSpecification" => [
+                "@type" => "PriceSpecification",
+                "price" => "0",
+                "priceCurrency" => "USD",
+                "description" => "Contact for price"
+            ],
+            "seller" => [
+                "@type" => "Organization",
+                "name" => "Texas Specialized Quartz & Granite",
+                "@id" => "$DOMAIN/#organization"
+            ],
         ],
         "aggregateRating" => [
             "@type" => "AggregateRating",

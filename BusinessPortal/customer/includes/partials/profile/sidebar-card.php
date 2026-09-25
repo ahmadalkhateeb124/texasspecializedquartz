@@ -5,7 +5,7 @@
 
     <div class="card-body" style="padding-top:0;text-align:center;">
         <div style="margin-top:-36px;margin-bottom:12px;">
-            <div style="width:72px;height:72px;border-radius:50%;background:#8b6f4e;
+            <div style="width:72px;height:72px;border-radius:50%;background:#000000;
                         border:3px solid var(--surface);display:inline-flex;align-items:center;
                         justify-content:center;color:#fff;font-size:26px;font-weight:700;margin:0 auto;">
                 <?= htmlspecialchars($initials) ?>

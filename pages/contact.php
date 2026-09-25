@@ -4,7 +4,7 @@ $mapLink  = setting('business_map_link', 'https://maps.app.goo.gl/bwV6BKwE9fJP1F
 $bizPhone = setting('business_phone', '+1 (469) 814-0555');
 $bizPhoneTel = preg_replace('/[^+\d]/', '', $bizPhone) ?: '+14698140555';
 $bizEmail = setting('business_email', 'Cs@TexasSpecializedQuartz.com');
-$bizAddr  = setting('business_address', '10830 Composite Dr, Dallas, TX 75220');
+$bizAddr  = setting('business_address', '2943 Ladybird Ln, Dallas, TX 75220, United States');
 ?>
 
 <header class="page-header" data-background="images/Granit-Img/ccccc.png">
@@ -31,7 +31,7 @@ $bizAddr  = setting('business_address', '10830 Composite Dr, Dallas, TX 75220');
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
                             <a href="<?= htmlspecialchars($mapLink) ?>" target="_blank" rel="noopener">
-                                <?= htmlspecialchars($bizAddr) ?>
+                           2943 Ladybird Ln, Dallas, TX 75220, United States
                             </a>
                         </li>
                         <li>
@@ -44,7 +44,7 @@ $bizAddr  = setting('business_address', '10830 Composite Dr, Dallas, TX 75220');
                         </li>
                         <li>
                             <i class="far fa-clock"></i>
-                            Mon–Fri 9am–6pm · Sat 9am–3pm
+                            Mon–Fri: 9:00 AM – 5:00 PM | Sat: 11:00 AM – 2:00 PM | Sun: Closed
                         </li>
                     </ul>
 

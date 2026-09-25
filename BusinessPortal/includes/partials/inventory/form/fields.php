@@ -5,9 +5,8 @@
  */
 $s = $slab ?? [];
 $v = fn(string $k): string => htmlspecialchars((string)($s[$k] ?? ''));
-$siteRoot = realpath(__DIR__ . '/../../../../..');
-$hasImage = !empty($s['image']) && $siteRoot && file_exists($siteRoot . '/' . ltrim($s['image'], '/'));
-$imgSrc   = $hasImage ? '/texasspecializedquartz/' . ltrim($s['image'], '/') : '';
+$hasImage = !empty($s['image']) && file_exists(site_path(ltrim($s['image'], '/')));
+$imgSrc   = $hasImage ? site_asset(ltrim($s['image'], '/')) : '';
 ?>
 <div class="row g-4">
     <div class="col-lg-8">

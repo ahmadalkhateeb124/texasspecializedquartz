@@ -37,10 +37,10 @@ $org = [
     ],
     'address' => [
         '@type'           => 'PostalAddress',
-        'streetAddress'   => '1225 W College Ave #616',
-        'addressLocality' => 'Carrollton',
+        'streetAddress'   => '2943 Ladybird Ln',
+        'addressLocality' => 'Dallas',
         'addressRegion'   => 'TX',
-        'postalCode'      => '75006',
+        'postalCode'      => '75220',
         'addressCountry'  => 'US',
     ],
     'contactPoint' => [

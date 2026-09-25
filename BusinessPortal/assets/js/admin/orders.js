@@ -2,69 +2,63 @@
  * admin/orders.js — behavior for the admin Orders listing page.
  * Reads CSRF token from <meta name="csrf-token">.
  */
-(function () {
+function _ordersInit() {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
-    /* ── Live search filter ── */
-    document.getElementById('tableSearch')?.addEventListener('input', function () {
-        const q = this.value.toLowerCase();
-        document.querySelectorAll('#ordersTable tbody tr').forEach(tr => {
-            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-        });
-    });
-
-    /* ── Delete flow ── */
+    /* ── Delete flow (uses our custom confirmDialog from footer.php) ── */
     let deleteId = null;
-    const modalEl = document.getElementById('deleteModal');
-    const modal = modalEl ? new bootstrap.Modal(modalEl) : null;
 
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             deleteId = btn.dataset.id;
-            document.getElementById('deleteLabel').textContent = 'Delete ' + btn.dataset.label + '?';
-            modal?.show();
-        });
-    });
+            const label = btn.dataset.label || ('order #' + deleteId);
 
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
-        if (!deleteId) return;
+            const ok = (typeof confirmDialog === 'function')
+                ? await confirmDialog({
+                    title:       'Delete this order?',
+                    message:     `${label} will be permanently removed. This cannot be undone.`,
+                    confirmText: 'Delete',
+                    cancelText:  'Cancel',
+                    type:        'danger',
+                    icon:        'bx-trash'
+                  })
+                : window.confirm(`Delete ${label}? This cannot be undone.`);
 
-        const btn = document.getElementById('confirmDeleteBtn');
-        const spinner = document.getElementById('deleteSpinner');
+            if (!ok) { deleteId = null; return; }
 
-        btn.disabled = true;
-        spinner.classList.remove('d-none');
+            const fd = new FormData();
+            fd.append('id', deleteId);
+            fd.append('csrf_token', csrfToken);
 
-        const fd = new FormData();
-        fd.append('id', deleteId);
-        fd.append('csrf_token', csrfToken);
-
-        try {
-            const res = await fetch('../auth/delete-order.php', { method: 'POST', body: fd });
-            const data = await res.json();
-
-            modal?.hide();
-
-            if (data.success) {
-                showToast(data.message || 'Order deleted.', 'success');
-                document.querySelector(`.delete-btn[data-id="${deleteId}"]`)
-                    ?.closest('tr')?.remove();
-            } else {
-                showToast(data.message || 'Could not delete order.', 'error');
+            try {
+                const res = await fetch('../auth/delete-order.php', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (data.success) {
+                    if (typeof showToast === 'function') {
+                        showToast(data.message || 'Order deleted.', 'success');
+                    }
+                    document.querySelector(`.delete-btn[data-id="${deleteId}"]`)?.closest('.ord-card')?.remove();
+                    document.querySelector(`.delete-btn[data-id="${deleteId}"]`)?.closest('tr')?.remove();
+                } else {
+                    (typeof showToast === 'function' ? showToast : alert)(
+                        data.message || 'Could not delete order.', 'error'
+                    );
+                }
+            } catch {
+                (typeof showToast === 'function' ? showToast : alert)(
+                    'Network error. Please try again.', 'error'
+                );
             }
-        } catch {
-            modal?.hide();
-            showToast('Network error. Please try again.', 'error');
-        }
 
-        btn.disabled = false;
-        spinner.classList.add('d-none');
-        deleteId = null;
+            deleteId = null;
+        });
     });
 
     /* ── View order modal ── */
     const viewModalEl = document.getElementById('viewOrderModal');
-    const viewModal = viewModalEl ? new bootstrap.Modal(viewModalEl) : null;
+    const viewModal = (viewModalEl && typeof bootstrap !== 'undefined')
+        ? new bootstrap.Modal(viewModalEl)
+        : null;
 
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -164,4 +158,11 @@
 
         return html;
     }
-})();
+}
+
+/* Wait for DOM + Bootstrap before wiring up handlers */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _ordersInit);
+} else {
+    _ordersInit();
+}

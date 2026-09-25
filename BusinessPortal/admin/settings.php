@@ -259,7 +259,7 @@ include __DIR__ . '/includes/head.php';
             .settings-tab:hover { background:var(--surface-muted); color:var(--text); }
             .settings-tab.active {
                 background:var(--brand-l, #efe6d8);
-                color:var(--brand, #8b6f4e);
+                color:var(--brand, #000000);
                 font-weight:600;
             }
             .pl-hint { font-size:11px; color:var(--text-sub); margin-top:4px; }

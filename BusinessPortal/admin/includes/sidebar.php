@@ -34,6 +34,7 @@ $adminTabs = [
     'calendar'   => ['bx-calendar',   'Calendar'],
     'inquiries'  => ['bx-envelope',   'Inbox'],
     'customers'  => ['bx-group',      'Customers'],
+    'employees'  => ['bx-id-card',    'Employees'],
     'products'   => ['bx-cube-alt',   'Remnants'],
     'inventory'  => ['bx-cube',       'Inventory'],
     'sinks'      => ['bx-grid-alt',   'Sinks'],
@@ -50,6 +51,7 @@ $adminTabs = [
 $tabAliases = [
     'orders'    => ['order-new', 'order-edit', 'order-view'],
     'customers' => ['customers-new', 'customers-edit', 'customers-view'],
+    'employees' => ['employees-new', 'employees-edit'],
     'products'  => ['products-new', 'products-edit'],
     'sinks'     => ['sinks-new', 'sinks-edit'],
     'blog'      => ['blog-new', 'blog-edit'],
@@ -63,20 +65,41 @@ foreach ($tabAliases as $tab => $aliases) {
         break;
     }
 }
+
+/* Bottom nav: 3 most-used destinations directly, everything else grouped under "More". */
+$bottomPrimary = ['index', 'orders', 'calendar'];
+$bottomMore = [
+    'inquiries' => 'Communication',
+    'customers' => 'People',
+    'employees' => 'People',
+    'products'  => 'Catalog',
+    'inventory' => 'Catalog',
+    'sinks'     => 'Catalog',
+    'gallery'   => 'Content',
+    'blog'      => 'Content',
+    'faq'       => 'Content',
+    'priceList' => 'Content',
+    'training'  => 'Content',
+    'settings'  => 'Account',
+    'profile'   => 'Account',
+];
 ?>
 
 <!-- ── Top brand bar ───────────────────────────────────────── -->
 <header class="topbar">
     <div class="topbar-inner">
-        <button type="button" class="tn-toggle" aria-label="Open menu" aria-expanded="false">
-            <span></span><span></span><span></span>
-        </button>
         <a href="index" class="topbar-brand">
             <img src="/images/Granit-Img/logo.png" alt="">
             <span class="topbar-brand-name">Texas Specialized Quartz &amp; Granite</span>
         </a>
 
         <div class="topbar-right">
+        <!-- Install PWA button (visible only when browser supports install) -->
+        <button id="pwaInstallBtn" class="topbar-icon-btn pwa-install-btn" title="Install desktop app" type="button" style="display:none;">
+            <i class='bx bx-download'></i>
+            <span class="pwa-install-label">Install App</span>
+        </button>
+
         <!-- Notifications (placeholder) -->
         <div class="dropdown">
             <button class="topbar-icon-btn" data-bs-toggle="dropdown" title="Notifications">
@@ -124,16 +147,9 @@ foreach ($tabAliases as $tab => $aliases) {
     </div>
 </header>
 
-<!-- ── Backdrop (mobile drawer) ────────────────────────────── -->
-<div class="tn-backdrop" aria-hidden="true"></div>
-
-<!-- ── Tabs navigation (horizontal on desktop, side drawer on mobile) -->
+<!-- ── Tabs navigation (horizontal on desktop) ─────────────── -->
 <nav class="tabs-nav" aria-label="Sections">
     <div class="tabs-nav-inner">
-        <div class="tn-drawer-head">
-            <span class="tn-drawer-title">Menu</span>
-            <button type="button" class="tn-close" aria-label="Close menu">&times;</button>
-        </div>
         <?php foreach ($adminTabs as $page => [$icon, $label]): ?>
             <a href="<?= $page ?>"
                class="tab-link <?= $activeTab === $page ? 'active' : '' ?>">
@@ -143,24 +159,108 @@ foreach ($tabAliases as $tab => $aliases) {
     </div>
 </nav>
 
+<!-- ── Bottom tab bar (mobile only, app-like) ──────────────── -->
+<nav class="bottombar" aria-label="Primary">
+    <?php foreach ($bottomPrimary as $page):
+        [$icon, $label] = $adminTabs[$page]; ?>
+        <a href="<?= $page ?>" class="bn-link <?= $activeTab === $page ? 'active' : '' ?>">
+            <span class="bn-icon-wrap"><i class='bx <?= $icon ?>'></i></span>
+            <span><?= $label ?></span>
+        </a>
+    <?php endforeach; ?>
+    <button type="button" class="bn-link <?= isset($bottomMore[$activeTab]) ? 'active' : '' ?>" id="moreSheetBtn">
+        <span class="bn-icon-wrap"><i class='bx bx-grid-alt'></i></span>
+        <span>More</span>
+    </button>
+</nav>
+
+<!-- ── More sheet (mobile only) ────────────────────────────── -->
+<div class="more-sheet" id="moreSheet">
+    <div class="more-sheet-backdrop"></div>
+    <div class="more-sheet-panel">
+        <div class="more-sheet-handle"></div>
+        <div class="more-sheet-head">
+            <span class="more-sheet-title">Menu</span>
+            <button type="button" class="more-sheet-close" aria-label="Close">&times;</button>
+        </div>
+        <?php
+        $sections = [];
+        foreach ($bottomMore as $page => $section) {
+            $sections[$section][] = $page;
+        }
+        foreach ($sections as $section => $pages): ?>
+            <div class="more-section">
+                <div class="more-section-label"><?= htmlspecialchars($section) ?></div>
+                <div class="more-grid">
+                    <?php foreach ($pages as $page):
+                        [$icon, $label] = $adminTabs[$page]; ?>
+                        <a href="<?= $page ?>" class="more-item <?= $activeTab === $page ? 'active' : '' ?>">
+                            <span class="more-item-icon"><i class='bx <?= $icon ?>'></i></span>
+                            <span><?= $label ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+
 <script>
 (function () {
-    var btn = document.querySelector('.tn-toggle');
-    var bd  = document.querySelector('.tn-backdrop');
-    var cl  = document.querySelector('.tn-close');
-    if (!btn) return;
-    function open()  { document.body.classList.add('tn-open');    btn.setAttribute('aria-expanded','true');  }
-    function close() { document.body.classList.remove('tn-open'); btn.setAttribute('aria-expanded','false'); }
-    btn.addEventListener('click', function () {
-        document.body.classList.contains('tn-open') ? close() : open();
-    });
-    if (bd) bd.addEventListener('click', close);
-    if (cl) cl.addEventListener('click', close);
-    // Close drawer when a tab is clicked (so the user actually navigates)
-    document.querySelectorAll('.tabs-nav .tab-link').forEach(function (a) {
-        a.addEventListener('click', close);
-    });
-    // Close on ESC
+    var openBtn = document.getElementById('moreSheetBtn');
+    var sheet   = document.getElementById('moreSheet');
+    if (!openBtn || !sheet) return;
+    var closeBtn = sheet.querySelector('.more-sheet-close');
+    var backdrop = sheet.querySelector('.more-sheet-backdrop');
+    function open()  { sheet.classList.add('open'); }
+    function close() { sheet.classList.remove('open'); }
+    openBtn.addEventListener('click', open);
+    if (closeBtn) closeBtn.addEventListener('click', close);
+    if (backdrop) backdrop.addEventListener('click', close);
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
+
+<!-- ── PWA: service-worker registration + install prompt ────── -->
+<script>
+(function () {
+    /* 1. Register service worker (required for installability) */
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker
+                .register('/BusinessPortal/sw.js', { scope: '/BusinessPortal/' })
+                .catch(function (err) { console.warn('SW register failed:', err); });
+        });
+    }
+
+    /* 2. Custom install button — only visible when the browser supports it */
+    var installBtn = document.getElementById('pwaInstallBtn');
+    var deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (installBtn) installBtn.style.display = 'inline-flex';
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async function () {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            try { await deferredPrompt.userChoice; } catch (_) {}
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('appinstalled', function () {
+        if (installBtn) installBtn.style.display = 'none';
+        deferredPrompt = null;
+    });
+
+    /* 3. Hide install button when already running as installed app */
+    if (window.matchMedia('(display-mode: standalone)').matches && installBtn) {
+        installBtn.style.display = 'none';
+    }
 })();
 </script>

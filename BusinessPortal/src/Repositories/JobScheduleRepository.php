@@ -36,6 +36,19 @@ class JobScheduleRepository
         return $stmt->fetchAll();
     }
 
+    public function forSection(int $jobSectionId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT s.*, j.job_type, j.job_type_other
+            FROM job_schedules s
+            LEFT JOIN job_sections j ON j.id = s.job_section_id
+            WHERE s.job_section_id = :jid
+            ORDER BY s.scheduled_date ASC
+        ");
+        $stmt->execute([':jid' => $jobSectionId]);
+        return $stmt->fetchAll();
+    }
+
     public function allForCalendar(): array
     {
         $stmt = $this->pdo->query("
@@ -50,6 +63,26 @@ class JobScheduleRepository
             LEFT JOIN customers_companies c ON c.id = a.company_id
             ORDER BY s.scheduled_date ASC
         ");
+        return $stmt->fetchAll();
+    }
+
+    /** All job_schedules for orders assigned to one employee — same row shape as allForCalendar(). */
+    public function forEmployee(int $employeeId): array
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT s.id, s.order_id, s.job_section_id, s.event_type,
+                   s.scheduled_date, s.status, s.notes,
+                   j.job_type, j.job_type_other,
+                   f.customer_name, f.phone AS order_phone, f.address, f.city,
+                   c.company_name
+            FROM job_schedules s
+            JOIN job_sections j             ON j.id = s.job_section_id
+            JOIN fabrication_orders f        ON f.id = s.order_id AND f.assigned_employee_id = :eid
+            LEFT JOIN accounts a            ON a.id = f.account_id
+            LEFT JOIN customers_companies c ON c.id = a.company_id
+            ORDER BY s.scheduled_date ASC
+        ");
+        $stmt->execute([':eid' => $employeeId]);
         return $stmt->fetchAll();
     }
 
@@ -106,15 +139,33 @@ class JobScheduleRepository
 
     public function setOrderStatus(int $orderId, string $status): void
     {
-        $stmt = $this->pdo->prepare("UPDATE fabrication_orders SET admin_status = :s WHERE id = :id");
-        $stmt->execute([':s' => $status, ':id' => $orderId]);
+        try {
+            $stmt = $this->pdo->prepare("UPDATE fabrication_orders SET admin_status = :s WHERE id = :id");
+            $stmt->execute([':s' => $status, ':id' => $orderId]);
+        } catch (PDOException $e) {
+            /* `admin_status` column missing — user hasn't run the migration yet.
+               Throw a friendlier message so the UI shows what to fix. */
+            if (str_contains($e->getMessage(), 'admin_status')) {
+                throw new RuntimeException(
+                    'Database schema is out of date — run migrations/2026-04-25_add_admin_status_to_fabrication_orders.sql in phpMyAdmin first.'
+                );
+            }
+            throw $e;
+        }
     }
 
     public function orderStatus(int $orderId): string
     {
-        $stmt = $this->pdo->prepare("SELECT admin_status FROM fabrication_orders WHERE id = :id");
-        $stmt->execute([':id' => $orderId]);
-        return (string)($stmt->fetchColumn() ?: 'new');
+        try {
+            $stmt = $this->pdo->prepare("SELECT admin_status FROM fabrication_orders WHERE id = :id");
+            $stmt->execute([':id' => $orderId]);
+            return (string)($stmt->fetchColumn() ?: 'new');
+        } catch (PDOException $e) {
+            /* Column missing on legacy DBs — fall back to default
+               so the page still renders. Run the migration to enable
+               status tracking properly. */
+            return 'new';
+        }
     }
 
     public static function eventColor(string $type): string

@@ -61,7 +61,7 @@ $statusBadge = function (string $s): string {
                         <tr data-status="<?= htmlspecialchars($status) ?>">
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div style="width:34px;height:34px;border-radius:50%;background:#8b6f4e;
+                                    <div style="width:34px;height:34px;border-radius:50%;background:#000000;
                                                 display:flex;align-items:center;justify-content:center;
                                                 color:#fff;font-size:12px;font-weight:700;flex-shrink:0;">
                                         <?= htmlspecialchars($initials) ?>

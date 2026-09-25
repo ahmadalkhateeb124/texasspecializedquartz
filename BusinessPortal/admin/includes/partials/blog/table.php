@@ -31,13 +31,13 @@
                 </thead>
                 <tbody id="blogTbody">
                     <?php foreach ($posts as $p):
-                        $imgPath = '/' . ltrim($p['image'], '/');
-                        $hasImg  = !empty($p['image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/texasspecializedquartz/' . ltrim($p['image'], '/'));
+                        $imgWebPath = site_asset(ltrim($p['image'] ?? '', '/'));
+                        $hasImg     = !empty($p['image']) && file_exists(site_path(ltrim($p['image'], '/')));
                     ?>
                         <tr>
                             <td>
                                 <?php if ($hasImg): ?>
-                                    <img src="<?= htmlspecialchars('/texasspecializedquartz/' . ltrim($p['image'], '/')) ?>"
+                                    <img src="<?= htmlspecialchars($imgWebPath) ?>"
                                         alt="" style="width:50px;height:40px;object-fit:cover;border-radius:4px;">
                                 <?php else: ?>
                                     <div style="width:50px;height:40px;background:var(--color-bg-subdued);

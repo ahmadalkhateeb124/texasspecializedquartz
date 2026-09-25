@@ -13,7 +13,7 @@ $hasAvatar = !empty($admin['avatar']) && file_exists(__DIR__ . '/../../../../aut
                            width:72px;height:72px;border-radius:50%;
                            border:3px solid var(--color-surface);object-fit:cover;" alt="Avatar">
             <?php else: ?>
-                <div style="width:72px;height:72px;border-radius:50%;background:#8b6f4e;
+                <div style="width:72px;height:72px;border-radius:50%;background:#000000;
                             border:3px solid var(--color-surface);
                             display:inline-flex;align-items:center;justify-content:center;
                             color:#fff;font-size:26px;font-weight:700;">

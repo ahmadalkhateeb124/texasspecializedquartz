@@ -1,6 +1,9 @@
 <?php
 /**
- * Fabrication order notification email (HTML body).
+ * Fabrication order notification email — bulletproof, table-based HTML.
+ *
+ * Renders identically in Gmail, Outlook 2007+, Apple Mail, iOS Mail,
+ * Yahoo, ProtonMail and most other clients.
  *
  * Expects:
  *   $order       array with: id, customer_name, phone, address, city, zip_code,
@@ -10,13 +13,15 @@
  *   $attachment  ['name' => string, 'path' => string] | null
  */
 
+$h = fn($v) => htmlspecialchars((string)($v ?? ''), ENT_QUOTES, 'UTF-8');
+
 $formatThickness = function (array $job): string {
-    if ($job['thickness'] === 'custom' && !empty($job['thickness_custom'])) {
-        return 'Custom: <span class="custom-value">' . htmlspecialchars($job['thickness_custom']) . ' cm</span>';
+    if (($job['thickness'] ?? '') === 'custom' && !empty($job['thickness_custom'])) {
+        return htmlspecialchars($job['thickness_custom']) . ' cm (custom)';
     }
-    if ($job['thickness'] === '20') return '2 cm';
-    if ($job['thickness'] === '30') return '3 cm';
-    return !empty($job['thickness']) ? htmlspecialchars($job['thickness']) : '';
+    if (($job['thickness'] ?? '') === '2cm' || ($job['thickness'] ?? '') === '20') return '2 cm';
+    if (($job['thickness'] ?? '') === '3cm' || ($job['thickness'] ?? '') === '30') return '3 cm';
+    return htmlspecialchars((string)($job['thickness'] ?? '—'));
 };
 
 $formatFileSize = function (int $bytes): string {
@@ -25,230 +30,336 @@ $formatFileSize = function (int $bytes): string {
     if ($bytes >= 1024)       return number_format($bytes / 1024, 2) . ' KB';
     return $bytes . ' bytes';
 };
-?>
-<!DOCTYPE html>
-<html lang="en">
 
+$jobLabel = function (array $job): string {
+    $type = $job['job_type'] ?? '';
+    $other = $job['job_type_other'] ?? '';
+    $labels = [
+        'kitchen' => 'Kitchen', 'bathroom' => 'Bathroom',
+        'MasterBathroom' => 'Master Bathroom', 'other' => 'Other',
+    ];
+    $base = $labels[$type] ?? ucfirst($type);
+    return $other ? "$base — " . htmlspecialchars($other) : $base;
+};
+
+$attachmentSize = null;
+if ($attachment && !empty($attachment['path']) && file_exists($attachment['path'])) {
+    $attachmentSize = filesize($attachment['path']);
+}
+
+$brand     = '#9f8054';
+$brandDark = '#5a4530';
+$ink       = '#1a1814';
+$muted     = '#6a635a';
+$bg        = '#f5f2ec';
+$cardBg    = '#ffffff';
+$border    = '#e8e3da';
+
+$totalJobs   = count($jobs);
+$createdDate = date('F j, Y \a\t g:i A');
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fabrication Order #<?= $order['id'] ?></title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background-color: #f5f7fa; padding: 20px; }
-        .email-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
-        .email-header { background: #9f8054; padding: 30px 40px; text-align: center; color: white; position: relative; }
-        .logo-placeholder { font-size: 32px; font-weight: bold; color: white; margin-bottom: 20px; display: inline-block; padding: 10px 20px; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border: 2px solid rgba(255, 255, 255, 0.3); }
-        .order-title { font-size: 28px; font-weight: 600; margin-bottom: 10px; color: white; }
-        .order-id { font-size: 36px; font-weight: 700; color: #ffd54f; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); }
-        .order-date { font-size: 14px; opacity: 0.9; color: #e3f2fd; }
-        .email-content { padding: 40px; }
-        .section { margin-bottom: 30px; padding: 25px; background: #f8f9fa; border-radius: 10px; border-left: 5px solid #9f8054; }
-        .section-title { font-size: 18px; font-weight: 600; color: #9f8054; margin-bottom: 20px; }
-        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
-        .info-item { display: flex; flex-direction: column; padding: 10px; background: white; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
-        .info-label { font-size: 12px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-        .info-value { font-size: 15px; font-weight: 500; color: #333; }
-        .job-sections-container { display: grid; gap: 20px; }
-        .job-section { background: white; border-radius: 8px; padding: 20px; border: 1px solid #e0e0e0; }
-        .job-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #e8eaf6; }
-        .job-section-title { font-size: 16px; font-weight: 600; color: #9f8054; }
-        .job-section-number { background: #9f8054; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
-        .job-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-        .job-detail { padding: 8px 12px; background: #f5f7fa; border-radius: 6px; border-left: 3px solid #776852; margin-bottom: 15px; }
-        .job-label { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 3px; }
-        .job-value { font-size: 14px; font-weight: 500; color: #333; }
-        .custom-value { color: #d32f2f; font-weight: 700; }
-        .attachment-section { background: #e8f5e9; border-left-color: #4caf50; }
-        .attachment-info { display: flex; align-items: center; gap: 15px; padding: 15px; background: white; border-radius: 8px; border: 1px solid #c8e6c9; }
-        .attachment-name { font-weight: 600; color: #2e7d32; margin-bottom: 5px; }
-        .attachment-meta { font-size: 12px; color: #666; }
-        .notes-content { padding: 15px; background: white; border-radius: 8px; border: 1px solid #e0e0e0; font-size: 14px; line-height: 1.8; color: #555; }
-        .email-footer { background: #9f8054; color: white; padding: 25px 40px; text-align: center; }
-        .footer-logo { font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #ffd54f; }
-        .footer-info { font-size: 13px; opacity: 0.9; margin-bottom: 10px; }
-        .footer-copyright { font-size: 12px; opacity: 0.7; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: #e3f2fd; color: #837562; }
-        @media (max-width: 600px) {
-            .email-content { padding: 20px; }
-            .section { padding: 15px; }
-            .info-grid, .job-details-grid { grid-template-columns: 1fr; }
-            .job-detail, .info-item { margin-bottom: 10px; }
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no, date=no, url=no" />
+    <title>Order #<?= $h($order['id']) ?> — Texas Specialized Quartz</title>
+    <!--[if mso]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+            <o:AllowPNG />
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+    <!--[if mso]>
+    <style type="text/css">
+        table, td, div, h1, h2, h3, p { font-family: Arial, sans-serif !important; }
+    </style>
+    <![endif]-->
+    <style type="text/css">
+        body, table, td, div, p, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+        table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; border-collapse:collapse; }
+        img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; display:block; }
+        body { margin:0; padding:0; width:100% !important; }
+        @media screen and (max-width: 620px) {
+            .email-shell      { width: 100% !important; }
+            .stack-on-mobile  { display: block !important; width: 100% !important; }
+            .px-mobile        { padding-left: 18px !important; padding-right: 18px !important; }
+            .py-mobile        { padding-top: 22px !important; padding-bottom: 22px !important; }
+            .h1-mobile        { font-size: 26px !important; line-height: 32px !important; }
+            .order-id-mobile  { font-size: 32px !important; }
+        }
+        @media (prefers-color-scheme: dark) {
+            .dark-bg    { background-color: #181613 !important; }
+            .dark-card  { background-color: #221f1a !important; border-color: #322d24 !important; }
+            .dark-text  { color: #f0ece2 !important; }
+            .dark-muted { color: #b0a99c !important; }
         }
     </style>
 </head>
+<body class="dark-bg" style="margin:0;padding:0;background-color:<?= $bg ?>;font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;color:<?= $ink ?>;">
 
-<body>
-    <div class="email-container">
-        <div class="email-header">
-            <div class="logo-placeholder">Texas Specialized Quartz</div>
-            <h1 class="order-title">FABRICATION ORDER</h1>
-            <div class="order-id">#<?= $order['id'] ?></div>
-            <div class="order-date"><?= date('F j, Y \a\t g:i A') ?></div>
-            <div style="margin-top: 15px;"><span class="status-badge">NEW ORDER</span></div>
-        </div>
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:<?= $bg ?>;">
+    New fabrication order #<?= $h($order['id']) ?> from <?= $h($order['customer_name']) ?> — <?= $totalJobs ?> job<?= $totalJobs !== 1 ? 's' : '' ?>.
+</div>
 
-        <div class="email-content">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="dark-bg" style="background-color:<?= $bg ?>;">
+    <tr>
+        <td align="center" style="padding:24px 12px;">
 
-            <div class="section">
-                <div class="section-title">Order Details</div>
-                <div class="info-grid">
-                    <div class="info-item"><span class="info-label">Order ID</span><span class="info-value">#<?= $order['id'] ?></span></div>
-                    <div class="info-item"><span class="info-label">Created By</span><span class="info-value"><?= htmlspecialchars($order['user_fullname']) ?></span></div>
-                    <div class="info-item"><span class="info-label">User Email</span><span class="info-value"><?= htmlspecialchars($order['user_email']) ?></span></div>
-                    <div class="info-item"><span class="info-label">Order Date</span><span class="info-value"><?= date('M d, Y') ?></span></div>
-                </div>
-            </div>
+            <table role="presentation" class="email-shell" width="600" cellpadding="0" cellspacing="0" border="0"
+                   style="width:600px;max-width:600px;background-color:<?= $cardBg ?>;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(26,24,20,0.08);">
 
-            <div class="section">
-                <div class="section-title">Customer Information</div>
-                <div class="info-grid">
-                    <div class="info-item"><span class="info-label">Customer Name</span><span class="info-value"><?= htmlspecialchars($order['customer_name']) ?></span></div>
-                    <div class="info-item"><span class="info-label">Phone Number</span><span class="info-value"><?= htmlspecialchars($order['phone']) ?></span></div>
-                    <div class="info-item"><span class="info-label">Address</span><span class="info-value"><?= htmlspecialchars($order['address']) ?></span></div>
-                    <div class="info-item"><span class="info-label">City</span><span class="info-value"><?= htmlspecialchars($order['city']) ?></span></div>
-                    <div class="info-item"><span class="info-label">Zip Code</span><span class="info-value"><?= htmlspecialchars($order['zip_code']) ?></span></div>
-                </div>
-            </div>
+                <tr>
+                    <td class="px-mobile py-mobile" style="background-color:<?= $brand ?>;padding:36px 40px;text-align:left;">
+                        <p style="margin:0 0 6px 0;font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#ffe7c4;font-weight:700;">
+                            Texas Specialized Quartz &amp; Granite
+                        </p>
+                        <h1 class="h1-mobile" style="margin:0 0 14px 0;font-family:Georgia, 'Times New Roman', serif;font-size:28px;line-height:34px;font-weight:700;color:#ffffff;">
+                            New Fabrication Order
+                        </h1>
+                        <p class="order-id-mobile" style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:42px;line-height:1;font-weight:700;color:#ffd54f;letter-spacing:-1px;">
+                            #<?= $h($order['id']) ?>
+                        </p>
+                        <p style="margin:10px 0 0 0;font-family:Arial,sans-serif;font-size:13px;color:#ffe7c4;">
+                            Submitted <?= $createdDate ?>
+                        </p>
+                    </td>
+                </tr>
 
-            <div class="section">
-                <div class="section-title">Sales Information</div>
-                <div class="info-grid">
-                    <div class="info-item"><span class="info-label">Sales Representative</span><span class="info-value"><?= htmlspecialchars($order['sales_rep'] ?: 'Not specified') ?></span></div>
-                    <div class="info-item"><span class="info-label">Sales Rep Phone</span><span class="info-value"><?= htmlspecialchars($order['sales_rep_phone'] ?: 'Not specified') ?></span></div>
-                    <div class="info-item"><span class="info-label">PO Number</span><span class="info-value"><?= htmlspecialchars($order['po_number'] ?: 'Not specified') ?></span></div>
-                </div>
-            </div>
+                <tr>
+                    <td class="px-mobile dark-card" style="background-color:#fbf8f1;padding:18px 40px;border-bottom:1px solid <?= $border ?>;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td class="stack-on-mobile" width="33%" valign="top" style="padding:6px 8px;">
+                                    <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;">Customer</p>
+                                    <p style="margin:4px 0 0 0;font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;font-weight:600;">
+                                        <?= $h($order['customer_name']) ?>
+                                    </p>
+                                </td>
+                                <td class="stack-on-mobile" width="33%" valign="top" style="padding:6px 8px;">
+                                    <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;">Job Sections</p>
+                                    <p style="margin:4px 0 0 0;font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;font-weight:600;">
+                                        <?= $totalJobs ?> section<?= $totalJobs !== 1 ? 's' : '' ?>
+                                    </p>
+                                </td>
+                                <td class="stack-on-mobile" width="33%" valign="top" style="padding:6px 8px;">
+                                    <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;">PO Number</p>
+                                    <p style="margin:4px 0 0 0;font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;font-weight:600;">
+                                        <?= $order['po_number'] ? $h($order['po_number']) : '—' ?>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
 
-            <?php if (!empty($jobs)): ?>
-                <div class="section">
-                    <div class="section-title">Job Sections (<?= count($jobs) ?>)</div>
-                    <div class="job-sections-container">
-                        <?php foreach ($jobs as $index => $job):
-                            $jobTypeDisplay = ($job['job_type'] === 'other' && !empty($job['job_type_other']))
-                                ? htmlspecialchars($job['job_type_other'])
-                                : ucfirst($job['job_type']);
-                        ?>
-                            <div class="job-section">
-                                <div class="job-section-header">
-                                    <div class="job-section-title"><?= $jobTypeDisplay ?></div>
-                                    <div class="job-section-number"><?= $index + 1 ?></div>
-                                </div>
-                                <div class="job-details-grid">
-                                    <div class="job-detail">
-                                        <div class="job-label">Material Type</div>
-                                        <div class="job-value">
-                                            <?= ucfirst(htmlspecialchars($job['material_type'])) ?>
-                                            <?php if (!empty($job['material_other'])): ?>
-                                                <span class="custom-value">(<?= htmlspecialchars($job['material_other']) ?>)</span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
+                <tr>
+                    <td class="px-mobile py-mobile dark-card" style="padding:34px 40px;background-color:<?= $cardBg ?>;">
 
-                                    <?php if (!empty($job['material_color'])): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Material Color</div>
-                                            <div class="job-value"><?= htmlspecialchars($job['material_color']) ?></div>
-                                        </div>
-                                    <?php endif; ?>
+                        <h2 class="dark-text" style="margin:0 0 14px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:<?= $ink ?>;border-bottom:2px solid <?= $brand ?>;padding-bottom:8px;">
+                            Customer Information
+                        </h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:30px;">
+                            <tr>
+                                <td class="stack-on-mobile" width="50%" valign="top" style="padding:8px 12px 8px 0;">
+                                    <p style="margin:0 0 14px 0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">Phone</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $order['phone'] ? $h($order['phone']) : '—' ?></span>
+                                    </p>
+                                    <p style="margin:0 0 14px 0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">Address</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $order['address'] ? $h($order['address']) : '—' ?></span>
+                                    </p>
+                                </td>
+                                <td class="stack-on-mobile" width="50%" valign="top" style="padding:8px 0 8px 12px;">
+                                    <p style="margin:0 0 14px 0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">City</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $order['city'] ? $h($order['city']) : '—' ?></span>
+                                    </p>
+                                    <p style="margin:0 0 14px 0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">ZIP Code</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $order['zip_code'] ? $h($order['zip_code']) : '—' ?></span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
 
-                                    <?php $thicknessDisplay = $formatThickness($job); ?>
-                                    <?php if ($thicknessDisplay): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Thickness</div>
-                                            <div class="job-value"><?= $thicknessDisplay ?></div>
-                                        </div>
-                                    <?php endif; ?>
+                        <?php if (!empty($order['sales_rep']) || !empty($order['sales_rep_phone'])): ?>
+                        <h2 class="dark-text" style="margin:0 0 14px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:<?= $ink ?>;border-bottom:2px solid <?= $brand ?>;padding-bottom:8px;">
+                            Sales Representative
+                        </h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:30px;">
+                            <tr>
+                                <td class="stack-on-mobile" width="50%" valign="top" style="padding:8px 12px 8px 0;">
+                                    <p style="margin:0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">Name</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $h($order['sales_rep'] ?? '—') ?></span>
+                                    </p>
+                                </td>
+                                <td class="stack-on-mobile" width="50%" valign="top" style="padding:8px 0 8px 12px;">
+                                    <p style="margin:0;">
+                                        <span class="dark-muted" style="display:block;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;margin-bottom:3px;">Phone</span>
+                                        <span class="dark-text" style="font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;"><?= $h($order['sales_rep_phone'] ?? '—') ?></span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php endif; ?>
 
-                                    <?php if (!empty($job['sink_provider'])): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Sink Provider</div>
-                                            <div class="job-value"><?= ucfirst(htmlspecialchars($job['sink_provider'])) ?></div>
-                                        </div>
-                                    <?php endif; ?>
+                        <h2 class="dark-text" style="margin:0 0 18px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:<?= $ink ?>;border-bottom:2px solid <?= $brand ?>;padding-bottom:8px;">
+                            Job Sections (<?= $totalJobs ?>)
+                        </h2>
 
-                                    <?php if (!empty($job['sink_type'])): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Sink Type</div>
-                                            <div class="job-value"><?= ucfirst(htmlspecialchars($job['sink_type'])) ?></div>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <?php if ($job['sink_provider'] === 'ts_granite' && !empty($job['sink_style'])): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Sink Style</div>
-                                            <div class="job-value">
-                                                <?= ucfirst(str_replace('_', ' ', htmlspecialchars($job['sink_style']))) ?>
-                                                <?php if (!empty($job['sink_style_other'])): ?>
-                                                    <span class="custom-value">(<?= htmlspecialchars($job['sink_style_other']) ?>)</span>
+                        <?php if (empty($jobs)): ?>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:30px;background-color:#fff7eb;border-left:4px solid #d98e2a;border-radius:6px;">
+                                <tr>
+                                    <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:13px;color:#7a4a05;">
+                                        ⚠ This order was submitted without any job area selected.
+                                        Edit it in the admin dashboard to add fabrication details.
+                                    </td>
+                                </tr>
+                            </table>
+                        <?php else: foreach ($jobs as $idx => $job): ?>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin-bottom:18px;background-color:#fbf8f1;border:1px solid <?= $border ?>;border-radius:8px;">
+                                <tr>
+                                    <td style="padding:14px 18px;background-color:<?= $brandDark ?>;border-radius:8px 8px 0 0;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-family:Arial,sans-serif;font-size:13px;font-weight:700;color:#ffffff;">
+                                                    <span style="background-color:<?= $brand ?>;color:#ffffff;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700;margin-right:8px;">#<?= $idx + 1 ?></span>
+                                                    <?= $jobLabel($job) ?>
+                                                </td>
+                                                <?php if (($job['tear_out'] ?? '') === 'yes' || ($job['tear_out'] ?? '') === 'Yes'): ?>
+                                                <td align="right" style="font-family:Arial,sans-serif;">
+                                                    <span style="background-color:#d98e2a;color:#ffffff;padding:2px 9px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.5px;">TEAR OUT</span>
+                                                </td>
                                                 <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding:18px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <?php
+                                            $material = trim(($job['material_type'] ?? '') . (($job['material_other'] ?? '') ? ' ' . $job['material_other'] : ''));
+                                            $sink     = trim(implode(' / ', array_filter([
+                                                $job['sink_provider'] ?? '',
+                                                $job['sink_type']     ?? '',
+                                                $job['sink_style']    ?? '',
+                                                $job['sink_style_other'] ?? '',
+                                            ])));
+                                            $edge = trim(($job['edge_profile'] ?? '') . (($job['edge_profile_custom'] ?? '') ? ' (' . $job['edge_profile_custom'] . ')' : ''));
+                                            $rows = [
+                                                ['Material',     $material],
+                                                ['Color',        $job['material_color'] ?? ''],
+                                                ['Thickness',    $formatThickness($job)],
+                                                ['Edge Profile', $edge],
+                                                ['Sink',         $sink],
+                                            ];
+                                            foreach ($rows as $i => [$label, $value]):
+                                                if (!$value) continue;
+                                            ?>
+                                            <tr>
+                                                <td width="35%" style="padding:6px 8px 6px 0;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:<?= $muted ?>;font-weight:700;border-bottom:1px solid <?= $border ?>;vertical-align:top;">
+                                                    <?= $label ?>
+                                                </td>
+                                                <td style="padding:6px 0;font-family:Arial,sans-serif;font-size:14px;color:<?= $ink ?>;border-bottom:1px solid <?= $border ?>;vertical-align:top;">
+                                                    <?= $h($value) ?>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        <?php endforeach; endif; ?>
 
-                                    <?php if (!empty($job['edge_profile'])): ?>
-                                        <div class="job-detail">
-                                            <div class="job-label">Edge Profile</div>
-                                            <div class="job-value">
-                                                <?= ucfirst(htmlspecialchars($job['edge_profile'])) ?>
-                                                <?php if (!empty($job['edge_profile_custom'])): ?>
-                                                    <span class="custom-value">(<?= htmlspecialchars($job['edge_profile_custom']) ?>)</span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
+                        <?php if (!empty($order['notes'])): ?>
+                        <h2 class="dark-text" style="margin:18px 0 14px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:<?= $ink ?>;border-bottom:2px solid <?= $brand ?>;padding-bottom:8px;">
+                            Notes &amp; Instructions
+                        </h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;background-color:#fbf8f1;border-left:4px solid <?= $brand ?>;border-radius:6px;">
+                            <tr>
+                                <td style="padding:16px 20px;font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:<?= $ink ?>;">
+                                    <?= nl2br($h($order['notes'])) ?>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php endif; ?>
 
-                                    <div class="job-detail">
-                                        <div class="job-label">Tear Out Required</div>
-                                        <div class="job-value <?= $job['tear_out'] === 'yes' ? 'custom-value' : '' ?>">
-                                            <strong><?= ucfirst($job['tear_out']) ?></strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="section">
-                    <div class="section-title">Job Sections</div>
-                    <div style="text-align: center; padding: 30px; color: #666;">
-                        No job sections added to this order
-                    </div>
-                </div>
-            <?php endif; ?>
+                        <?php if ($attachment && !empty($attachment['name'])): ?>
+                        <h2 class="dark-text" style="margin:18px 0 14px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:<?= $ink ?>;border-bottom:2px solid <?= $brand ?>;padding-bottom:8px;">
+                            Attached File
+                        </h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;background-color:#eef7ee;border:1px solid #c8e6c9;border-radius:8px;">
+                            <tr>
+                                <td valign="middle" style="padding:14px 18px;font-family:Arial,sans-serif;">
+                                    <p style="margin:0;font-size:14px;font-weight:600;color:#1b5e20;">📎 <?= $h($attachment['name']) ?></p>
+                                    <p style="margin:3px 0 0 0;font-size:12px;color:#558b2f;">
+                                        <?= $attachmentSize ? $formatFileSize($attachmentSize) : 'attached to this email' ?>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                        <?php endif; ?>
 
-            <?php if ($attachment && file_exists($attachment['path'])):
-                $ext  = strtolower(pathinfo($attachment['name'], PATHINFO_EXTENSION));
-                $size = $formatFileSize(filesize($attachment['path']));
-            ?>
-                <div class="section attachment-section">
-                    <div class="section-title">Attached File</div>
-                    <div class="attachment-info">
-                        <div>
-                            <div class="attachment-name"><?= htmlspecialchars($attachment['name']) ?></div>
-                            <div class="attachment-meta"><?= strtoupper($ext) ?> file - <?= $size ?></div>
-                        </div>
-                    </div>
-                </div>
-            <?php endif; ?>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:14px;">
+                            <tr>
+                                <td align="center" style="padding:8px 0;">
+                                    <!--[if mso]>
+                                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+                                                 href="https://texasspecializedquartz.com/BusinessPortal/admin/order-view?id=<?= (int)$order['id'] ?>"
+                                                 style="height:48px;v-text-anchor:middle;width:280px;" arcsize="50%" stroke="f" fillcolor="<?= $brand ?>">
+                                        <w:anchorlock/>
+                                        <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:14px;font-weight:700;">View order in dashboard</center>
+                                    </v:roundrect>
+                                    <![endif]-->
+                                    <!--[if !mso]><!-- -->
+                                    <a href="https://texasspecializedquartz.com/BusinessPortal/admin/order-view?id=<?= (int)$order['id'] ?>"
+                                       style="display:inline-block;background-color:<?= $brand ?>;color:#ffffff;padding:14px 32px;font-family:Arial,sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;border-radius:24px;">
+                                        View order in dashboard
+                                    </a>
+                                    <!--<![endif]-->
+                                </td>
+                            </tr>
+                        </table>
 
-            <div class="section">
-                <div class="section-title">Additional Notes</div>
-                <div class="notes-content">
-                    <?= nl2br(htmlspecialchars($order['notes'] ?: 'No additional notes provided.')) ?>
-                </div>
-            </div>
+                    </td>
+                </tr>
 
-        </div>
+                <tr>
+                    <td class="px-mobile" style="background-color:<?= $ink ?>;padding:28px 40px;text-align:center;">
+                        <p style="margin:0 0 6px 0;font-family:Georgia,'Times New Roman',serif;font-size:16px;font-weight:700;color:#ffffff;">
+                            Texas Specialized Quartz &amp; Granite
+                        </p>
+                        <p style="margin:0 0 14px 0;font-family:Arial,sans-serif;font-size:12px;color:#9a9285;">
+                            Premium granite, quartz &amp; marble fabrication
+                        </p>
+                        <p style="margin:0 0 4px 0;font-family:Arial,sans-serif;font-size:12px;">
+                            <a href="tel:+14698140555" style="color:<?= $brand ?>;text-decoration:none;font-weight:700;">(469) 814-0555</a>
+                            <span style="color:#5a524a;">&nbsp;·&nbsp;</span>
+                            <a href="mailto:Cs@TexasSpecializedQuartz.com" style="color:<?= $brand ?>;text-decoration:none;">Cs@TexasSpecializedQuartz.com</a>
+                        </p>
+                        <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#6a635a;">
+                           2943 Ladybird Ln, Dallas, TX 75220, United States
+                        </p>
+                        <p style="margin:18px 0 0 0;font-family:Arial,sans-serif;font-size:10px;color:#5a524a;">
+                            © <?= date('Y') ?> Texas Specialized Quartz &amp; Granite. All rights reserved.
+                        </p>
+                    </td>
+                </tr>
 
-        <div class="email-footer">
-            <div class="footer-logo">Texas Specialized Quartz</div>
-            <div class="footer-info">Professional Fabrication Services</div>
-            <div class="footer-info">This email was automatically generated by the Fabrication Order System</div>
-            <div class="footer-copyright">&copy; <?= date('Y') ?> Texas Specialized Quartz. All rights reserved.</div>
-        </div>
-    </div>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
 </body>
-
 </html>

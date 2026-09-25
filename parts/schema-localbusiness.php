@@ -12,8 +12,8 @@
 $bizName    = setting('business_name', 'Texas Specialized Quartz & Granite');
 $bizPhone   = setting('business_phone', '+1-469-814-0555');
 $bizEmail   = setting('business_email', 'Cs@TexasSpecializedQuartz.com');
-$bizAddr    = setting('business_address', '1225 W College Ave #616');
-$bizCity    = setting('business_city', 'Carrollton');
+$bizAddr    = setting('business_address', '2943 Ladybird Ln ');
+$bizCity    = setting('business_city', 'Dallas TX 75220, United States');
 $bizState   = setting('business_state', 'TX');
 $bizZip     = setting('business_zip', '75006');
 $bizHours   = setting('business_hours', '');

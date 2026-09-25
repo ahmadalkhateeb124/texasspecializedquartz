@@ -73,16 +73,8 @@ $articleImg = $heroImg;
                    class="nd-share-btn nd-fb" aria-label="Share on Facebook">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="https://twitter.com/intent/tweet?url=<?= urlencode($canonicalUrl) ?>&amp;text=<?= urlencode($post['title']) ?>"
-                   target="_blank" rel="noopener noreferrer"
-                   class="nd-share-btn nd-tw" aria-label="Share on X">
-                    <i class="fab fa-x-twitter"></i>
-                </a>
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?= urlencode($canonicalUrl) ?>"
-                   target="_blank" rel="noopener noreferrer"
-                   class="nd-share-btn nd-li" aria-label="Share on LinkedIn">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
+           
+             
                 <a href="https://wa.me/?text=<?= urlencode($post['title'] . ' — ' . $canonicalUrl) ?>"
                    target="_blank" rel="noopener noreferrer"
                    class="nd-share-btn nd-wa" aria-label="Share on WhatsApp">
@@ -104,7 +96,8 @@ $articleImg = $heroImg;
             <div class="nd-cta-info">
                 <a href="tel:+14698140555"><i class="fas fa-phone"></i> (469) 814-0555</a>
                 <a href="mailto:Cs@TexasSpecializedQuartz.com"><i class="fas fa-envelope"></i> Cs@TexasSpecializedQuartz.com</a>
-                <span><i class="fas fa-map-marker-alt"></i> 1225 W College Ave #616, Carrollton, TX</span>
+                <span><i class="fas fa-map-marker-alt"></i>
+2943 Ladybird Ln, Dallas, TX 75220, United States</span>
             </div>
             <a href="<?= htmlspecialchars($baseHref) ?>contact" class="nd-cta-btn">Request a free quote <i class="fas fa-arrow-right"></i></a>
         </aside>

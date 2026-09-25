@@ -98,16 +98,36 @@
                     </div>
                 </div>
             </div>
+<div class="col-12 cta-section">
+    <div class="cta-box">
+        <h3>Upgrade Your Kitchen with Premium Stone Countertops</h3>
+        
+        <p>
+            Join over <strong>2,000 satisfied Texas homeowners</strong> who trust 
+            <strong>Texas Specialized Quartz & Granite</strong> for high-quality kitchen countertops.
+        </p>
 
-            <div class="col-12 cta-section">
-                <div class="cta-box">
-                    <h3>Ready to Upgrade Your Kitchen with Premium Stone Countertops?</h3>
-                    <p>Join <strong>2,000+ satisfied Texas homeowners</strong> who trust <strong>Texas Specialized Quartz &amp; Granite</strong> for their kitchen countertops. Visit our <strong>Plano showroom</strong> to hand-select your slab, or call for a <strong>free in-home measurement and quote</strong>.</p>
-                    <p><strong>Proudly serving Dallas, Plano, Frisco, McKinney, Allen, Richardson, Fort Worth, Arlington &amp; all of DFW</strong></p>
-                    <p>Call us today at <a class="phone-link" style="color:#9f8054;" href="tel:+14698140555"><strong>(469) 814-0555</strong></a> for a <strong>FREE consultation and same-week installation</strong></p>
-                    <a href="contact" class="btn btn-primary btn-lg">Get Your Free Estimate</a>
-                </div>
-            </div>
+        <p>
+            Visit us at <strong>2943 Ladybird Ln, Dallas, TX 75220, United States</strong> to choose your slab, 
+            or contact us for a <strong>free in-home measurement and quote</strong>.
+        </p>
+
+        <p>
+            Proudly serving Dallas, Plano, Frisco, McKinney, Allen, Richardson, Fort Worth, 
+            Arlington, and the entire DFW area.
+        </p>
+
+        <p>
+            Call us today at 
+            <a class="phone-link" style="color:#9f8054;" href="tel:+14698140555">
+                <strong>(469) 814-0555</strong>
+            </a> 
+            to schedule your free consultation.
+        </p>
+
+        <a href="contact" class="btn btn-primary btn-lg">Get Your Free Estimate</a>
+    </div>
+</div>
         </div>
     </div>
 </section>

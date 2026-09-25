@@ -1,10 +1,10 @@
 <?php
 $phone = setting('business_phone', '(469) 814-0555');
 $email = setting('business_email', 'Cs@TexasSpecializedQuartz.com');
-$addr  = setting('business_address', '1225 W College Ave #616');
-$city  = setting('business_city', 'Carrollton');
+$addr  = setting('business_address', '2943 Ladybird Ln');
+$city  = setting('business_city', 'Dallas');
 $state = setting('business_state', 'TX');
-$zip   = setting('business_zip', '75006');
+$zip   = setting('business_zip', '75220');
 $hours = setting('business_hours', 'Mon-Fri: 9:00 AM - 6:00 PM | Sat: 9:00 AM - 3:00 PM');
 $bizName = setting('business_name', 'Texas Specialized Quartz & Granite');
 $tagline = setting('business_tagline', 'Premium Granite Countertops');
@@ -107,7 +107,7 @@ $tagline = setting('business_tagline', 'Premium Granite Countertops');
                 © <?= date('Y') ?> <?= htmlspecialchars($bizName) ?>. All rights reserved.
             </span>
             <span class="tx-tagline"><?= htmlspecialchars($tagline) ?></span>
-            <span class="tx-credit">Developed by <a href="https://webkoit.com/" target="_blank" rel="noopener">Webkoit</a></span>
+            <span class="tx-credit">Developed by <a href="https://ahmadalkhatib.dev/" target="_blank" rel="noopener">Ahmad Alkhatib</a></span>
         </div>
     </div>
 </footer>

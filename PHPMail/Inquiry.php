@@ -49,25 +49,6 @@ if ($submittedToken === '' || $expectedToken === '' || !hash_equals($expectedTok
     exit;
 }
 
-/* ───────── 4. Per-session rate limit ───────── */
-$now      = time();
-$window   = 30 * 60;     // 30 minutes
-$maxHits  = 5;
-$rl       = $_SESSION['contact_rl'] ?? ['count' => 0, 'first' => $now];
-if ($now - ($rl['first'] ?? $now) > $window) {
-    $rl = ['count' => 0, 'first' => $now];
-}
-if (($rl['count'] ?? 0) >= $maxHits) {
-    http_response_code(429);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Too many submissions. Please try again in 30 minutes.'
-    ]);
-    exit;
-}
-$rl['count'] = ($rl['count'] ?? 0) + 1;
-$_SESSION['contact_rl'] = $rl;
-
 /* ───────── 5. Pull + validate inputs ───────── */
 $nameRaw    = trim((string)($_POST['name']    ?? ''));
 $emailRaw   = trim((string)($_POST['Email']   ?? ''));
@@ -138,16 +119,73 @@ $fromEmail  = $mailCfg['from_email']  ?? $smtpUser;
 $fromName   = $mailCfg['from_name']   ?? 'Texas Specialized Quartz';
 $receiver   = $mailCfg['admin_email'] ?? 'Cs@TexasSpecializedQuartz.com';
 
-$bodyHtml = '<p><strong>Name:</strong> ' . htmlspecialchars($nameRaw) . '</p>'
-          . '<p><strong>Email:</strong> ' . htmlspecialchars($emailRaw) . '</p>'
-          . '<p><strong>Subject:</strong> ' . htmlspecialchars($subjectRaw) . '</p>'
-          . '<hr><p>' . nl2br(htmlspecialchars($messageRaw)) . '</p>'
-          . '<hr><small>Submitted from: ' . htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? '?') . ' · '
-          . htmlspecialchars(($_SERVER['HTTP_USER_AGENT'] ?? '?')) . '</small>';
+$bodyHtml = '<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:20px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e0e0e0;">
+      <tr><td style="background:#1a1a1a;padding:24px 32px;">
+        <p style="margin:0;color:#ffffff;font-size:20px;font-weight:bold;">Texas Specialized Quartz &amp; Granite</p>
+        <p style="margin:4px 0 0;color:#ccb97a;font-size:13px;">New Website Inquiry</p>
+      </td></tr>
+      <tr><td style="padding:32px;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Name</span><br>
+              <span style="color:#222;font-size:15px;font-weight:600;">' . htmlspecialchars($nameRaw) . '</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Email</span><br>
+              <a href="mailto:' . htmlspecialchars($emailRaw) . '" style="color:#1a6fc4;font-size:15px;">' . htmlspecialchars($emailRaw) . '</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;border-bottom:1px solid #f0f0f0;">
+              <span style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Phone / Subject</span><br>
+              <span style="color:#222;font-size:15px;">' . htmlspecialchars($subjectRaw) . '</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 0 0;">
+              <span style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:.5px;">Message</span><br>
+              <div style="margin-top:8px;color:#333;font-size:14px;line-height:1.7;background:#f9f9f9;border-left:3px solid #ccb97a;padding:12px 16px;border-radius:0 4px 4px 0;">'
+              . nl2br(htmlspecialchars($messageRaw)) . '</div>
+            </td>
+          </tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+          <tr>
+            <td align="center">
+              <a href="mailto:' . htmlspecialchars($emailRaw) . '" style="display:inline-block;background:#ccb97a;color:#1a1a1a;text-decoration:none;padding:12px 28px;border-radius:6px;font-weight:bold;font-size:14px;">Reply to ' . htmlspecialchars($nameRaw) . '</a>
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+      <tr><td style="background:#f9f9f9;padding:16px 32px;border-top:1px solid #e8e8e8;">
+        <p style="margin:0;color:#aaa;font-size:11px;">Submitted from IP: ' . htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? '') . ' &nbsp;·&nbsp; texasspecializedquartz.com</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>';
+
+$altBody = "New inquiry from: {$nameRaw}\n"
+         . "Email: {$emailRaw}\n"
+         . "Phone/Subject: {$subjectRaw}\n"
+         . str_repeat('-', 40) . "\n"
+         . $messageRaw . "\n"
+         . str_repeat('-', 40) . "\n"
+         . "texasspecializedquartz.com";
 
 $mail = new PHPMailer(true);
 try {
     $mail->CharSet    = 'UTF-8';
+    $mail->Encoding   = 'base64';
     $mail->isHTML(true);
     $mail->isSMTP();
     $mail->Host       = $smtpHost;
@@ -156,13 +194,25 @@ try {
     $mail->SMTPSecure = $smtpSecure;
     $mail->Username   = $smtpUser;
     $mail->Password   = $smtpPass;
+    $mail->XMailer    = ' ';
 
     $mail->setFrom($fromEmail, $fromName);
-    $mail->addAddress($receiver);
+    $emails = [
+    $receiver,
+        'jay@texasspecializedquartz.com'
+    ];
+    
+    foreach ($emails as $to) {
+        $mail->addAddress($to);
+    }
     $mail->addReplyTo($emailRaw, $nameRaw);
-    $mail->Subject    = '[Inquiry] ' . mb_substr($subjectRaw, 0, 100);
+    $mail->Subject    = 'New Inquiry from ' . mb_substr($nameRaw, 0, 50) . ' — Texas Specialized Quartz';
     $mail->Body       = $bodyHtml;
-    $mail->AltBody    = "Name: $nameRaw\nEmail: $emailRaw\nSubject: $subjectRaw\n\n$messageRaw";
+    $mail->AltBody    = $altBody;
+
+    $mail->addCustomHeader('X-Priority', '3');
+    $mail->addCustomHeader('X-Mailer-Info', 'texasspecializedquartz.com contact form');
+    $mail->MessageID  = '<' . uniqid('tsq-', true) . '@texasspecializedquartz.com>';
 
     $mail->send();
 

@@ -53,6 +53,6 @@ include __DIR__ . '/includes/head.php';
         <?php include __DIR__ . '/includes/partials/orders/modals.php'; ?>
 
         <meta name="csrf-token" content="<?= csrfToken() ?>">
-        <script src="../assets/js/admin/orders.js"></script>
 
         <?php include __DIR__ . '/includes/footer.php'; ?>
+        <script src="../assets/js/admin/orders.js"></script>

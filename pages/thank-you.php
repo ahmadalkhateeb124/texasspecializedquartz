@@ -19,7 +19,15 @@ $gAdsLbl = setting('tracking_google_ads_inquiry_label'); // optional conversion 
 $metaPx  = setting('tracking_meta_pixel');
 $tikTok  = setting('tracking_tiktok_pixel');
 ?>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8C27Y2TZ8H"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
+  gtag('config', 'G-8C27Y2TZ8H');
+</script>
 <header class="page-header" data-background="images/Granit-Img/ccccc.png">
     <div class="container ee">
         <h1>Thank you</h1>
@@ -63,7 +71,7 @@ $tikTok  = setting('tracking_tiktok_pixel');
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
                         <strong>Visit our showroom</strong>
-                        <small>1225 W College Ave #616, Carrollton, TX</small>
+                        <small>2943 Ladybird Ln, Dallas, TX 75220, United States</small>
                     </div>
                 </div>
             </div>

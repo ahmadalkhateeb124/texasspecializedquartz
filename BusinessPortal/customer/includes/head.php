@@ -11,6 +11,15 @@
 
     <link rel="icon" type="image/png" href="/images/Granit-Img/logo-gg.jpg">
 
+    <!-- ── PWA: installable desktop app ────────────────────────── -->
+    <link rel="manifest" href="/BusinessPortal/customer/manifest.webmanifest">
+    <meta name="theme-color" content="#1a1814">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TSQG Portal">
+    <link rel="apple-touch-icon" href="/images/Granit-Img/logo.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -37,9 +46,9 @@
             --border-sub:       #d5cfc5;
 
             /* ── Brand accent — saddle brown ── */
-            --brand:            #8b5a2b;
-            --brand-h:          #6e4621;
-            --brand-l:          #f4ebe0;
+            --brand:            #000000;
+            --brand-h:          #2a2a2a;
+            --brand-l:          #ececec;
 
             /* ── Semantic ── */
             --success:          #3d6b4f;
@@ -181,7 +190,7 @@
         .topbar-user:hover { background: var(--bg); }
         .topbar-user-avatar {
             width: 32px; height: 32px; border-radius: 50%;
-            background: #8b6f4e; color: #fff;
+            background: #000000; color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 12px;
             overflow: hidden;
@@ -228,101 +237,142 @@
         }
         .tab-link.active i { color: #fff; }
 
-        /* ── Hamburger toggle (mobile only) + drawer head ────── */
-        .tn-toggle {
-            display: none;
-            width: 40px; height: 40px;
-            border: 1.5px solid var(--brand, #b08d57);
-            background: var(--brand, #b08d57);
-            border-radius: 10px;
-            padding: 0; cursor: pointer;
-            flex-direction: column; align-items: center; justify-content: center;
-            gap: 5px; margin-right: 6px;
-            transition: background .15s, border-color .15s, transform .15s;
+        /* ── Install PWA button (only shows when browser allows install) ── */
+        .pwa-install-btn {
+            width: auto !important;
+            padding: 0 12px !important;
+            gap: 6px;
+            background: var(--brand, #b08d57) !important;
+            color: #fff !important;
+            border-color: var(--brand, #b08d57) !important;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: .04em;
         }
-        .tn-toggle:hover { background: var(--text, #1a1814); border-color: var(--text, #1a1814); }
-        .tn-toggle:active { transform: scale(.95); }
-        .tn-toggle span {
-            display: block;
-            width: 20px; height: 2.5px;
-            background: #ffffff;
-            border-radius: 2px;
-            transition: transform .25s, opacity .15s;
+        .pwa-install-btn:hover {
+            background: var(--text, #1a1814) !important;
+            border-color: var(--text, #1a1814) !important;
+            color: #fff !important;
         }
-        body.tn-open .tn-toggle span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
-        body.tn-open .tn-toggle span:nth-child(2) { opacity: 0; }
-        body.tn-open .tn-toggle span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+        .pwa-install-btn i { color: #fff !important; font-size: 16px; }
+        .pwa-install-label { font-family: var(--tx-sans, Inter), sans-serif; }
+        @media (max-width: 600px) {
+            .pwa-install-label { display: none; }
+            .pwa-install-btn { padding: 0 !important; width: 36px !important; }
+        }
 
-        .tn-drawer-head { display: none; }
-        .tn-backdrop {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(15,15,15,.55);
-            backdrop-filter: blur(2px);
-            z-index: 50;
-            opacity: 0;
-            transition: opacity .25s;
-        }
+        /* ── Bottom nav (mobile, app-style) + More sheet ─────── */
+        .bottombar, .more-sheet { display: none; }
 
         @media (max-width: 1024px) {
-            .tn-toggle { display: inline-flex; }
-            .tabs-nav {
-                position: fixed;
-                top: 0; left: 0;
-                width: min(82vw, 320px);
-                height: 100vh;
-                z-index: 60;
-                border-bottom: 0;
-                border-right: 1px solid var(--border);
-                box-shadow: 8px 0 30px -12px rgba(0,0,0,.18);
-                transform: translateX(-100%);
-                transition: transform .28s ease;
-                overflow-y: auto;
-            }
-            .tabs-nav-inner {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 0 14px 24px;
-                gap: 4px;
-            }
-            .tn-drawer-head {
+            .tabs-nav { display: none !important; }
+
+            .bottombar {
                 display: flex;
-                align-items: center; justify-content: space-between;
-                padding: 18px 6px 14px;
-                margin: 0 0 8px;
-                border-bottom: 1px solid var(--border);
-                position: sticky; top: 0;
+                position: fixed;
+                left: 0; right: 0; bottom: 0;
+                z-index: 70;
                 background: var(--surface);
-                z-index: 1;
+                border-top: 1px solid var(--border);
+                padding: 6px 6px calc(6px + env(safe-area-inset-bottom));
+                box-shadow: 0 -8px 24px -18px rgba(24,20,15,.25);
             }
-            .tn-drawer-title {
-                font-family: var(--tx-serif, 'Fraunces'), Georgia, serif;
-                font-weight: 700; font-size: 18px; color: var(--text);
-                letter-spacing: -.01em;
+            .bn-link {
+                flex: 1;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                gap: 3px;
+                padding: 5px 4px 6px;
+                border: 0; background: none; cursor: pointer;
+                font-size: 10.5px; font-weight: 600;
+                color: var(--text-sub);
             }
-            .tn-close {
+            .bn-icon-wrap {
                 width: 34px; height: 34px;
+                display: flex; align-items: center; justify-content: center;
+                border-radius: 50%;
+                font-size: 20px;
+                transition: background .15s, color .15s;
+            }
+            .bn-link.active { color: var(--brand); }
+            .bn-link.active .bn-icon-wrap { background: var(--brand-l); color: var(--brand); }
+
+            .main-wrapper { padding-bottom: 74px; }
+
+            /* More sheet */
+            .more-sheet {
+                display: block;
+                position: fixed; inset: 0; z-index: 80;
+                visibility: hidden;
+                pointer-events: none;
+            }
+            .more-sheet.open { visibility: visible; pointer-events: auto; }
+            .more-sheet-backdrop {
+                position: absolute; inset: 0;
+                background: rgba(15,15,15,.5);
+                opacity: 0;
+                transition: opacity .25s;
+            }
+            .more-sheet.open .more-sheet-backdrop { opacity: 1; }
+            .more-sheet-panel {
+                position: absolute; left: 0; right: 0; bottom: 0;
+                max-height: 78vh;
+                overflow-y: auto;
+                background: var(--surface);
+                border-radius: 20px 20px 0 0;
+                padding: 10px 18px calc(20px + env(safe-area-inset-bottom));
+                transform: translateY(100%);
+                transition: transform .3s cubic-bezier(.32,.72,0,1);
+                box-shadow: 0 -20px 50px -20px rgba(24,20,15,.3);
+            }
+            .more-sheet.open .more-sheet-panel { transform: translateY(0); }
+            .more-sheet-handle {
+                width: 40px; height: 4px;
+                background: var(--border-sub);
+                border-radius: 999px;
+                margin: 0 auto 12px;
+            }
+            .more-sheet-head {
+                display: flex; align-items: center; justify-content: space-between;
+                margin-bottom: 14px;
+            }
+            .more-sheet-title {
+                font-family: var(--tx-serif, 'Fraunces'), Georgia, serif;
+                font-size: 18px; font-weight: 700; color: var(--text);
+            }
+            .more-sheet-close {
+                width: 32px; height: 32px;
                 border: 1px solid var(--border);
                 background: transparent;
                 border-radius: 8px;
-                font-size: 22px; line-height: 1;
-                color: var(--text-sub);
+                font-size: 20px; color: var(--text-sub);
+                display: flex; align-items: center; justify-content: center;
                 cursor: pointer;
-                display: inline-flex; align-items: center; justify-content: center;
-                transition: background .15s, color .15s;
-                padding: 0 0 4px;
             }
-            .tn-close:hover { background: var(--brand-l); color: var(--brand); }
-            .tab-link {
-                width: 100%;
-                justify-content: flex-start;
-                padding: 12px 14px;
-                font-size: 14px;
-                border-radius: 10px;
+            .more-sheet-close:hover { background: var(--brand-l); color: var(--brand); }
+            .more-section { margin-bottom: 18px; }
+            .more-section:last-child { margin-bottom: 4px; }
+            .more-section-label {
+                font-size: 11px; font-weight: 700; text-transform: uppercase;
+                letter-spacing: .5px; color: var(--text-sub);
+                margin-bottom: 10px;
             }
-            body.tn-open .tabs-nav { transform: translateX(0); }
-            body.tn-open .tn-backdrop { display: block; opacity: 1; }
-            body.tn-open { overflow: hidden; }
+            .more-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+            .more-item {
+                width: 78px;
+                display: flex; flex-direction: column; align-items: center; gap: 6px;
+                font-size: 11.5px; font-weight: 500; color: var(--text);
+                text-align: center;
+            }
+            .more-item-icon {
+                width: 52px; height: 52px;
+                display: flex; align-items: center; justify-content: center;
+                border-radius: 14px;
+                background: var(--bg);
+                color: var(--text-sub);
+                font-size: 22px;
+            }
+            .more-item.active { color: var(--brand); font-weight: 700; }
+            .more-item.active .more-item-icon { background: var(--brand); color: #fff; }
         }
 
         /* ── Page wrapper ─────────────────────────────────── */

@@ -66,7 +66,8 @@ $canonicalUrl = 'https://texasspecializedquartz.com/locations/' . $slug;
                 <h2>Premium stone countertops, fabricated for <?= htmlspecialchars($cityName) ?> homes.</h2>
                 <?php if ($intro): ?><p><?= htmlspecialchars($intro) ?></p><?php endif; ?>
                 <p>
-                    Visit our showroom at <strong>1225 W College Ave #616, Carrollton, TX</strong>
+                    Visit our showroom at <strong>10830 Composite Dr,
+Dallas, TX 75220</strong>
                     <?php if ($distance !== null && $distance > 0): ?>
                         — about <strong><?= (int)$distance ?> minutes</strong> from <?= htmlspecialchars($cityName) ?>
                     <?php endif; ?>
@@ -221,7 +222,8 @@ $schema = [
     'priceRange' => '$$',
     'address'   => [
         '@type'           => 'PostalAddress',
-        'streetAddress'   => '1225 W College Ave #616',
+        'streetAddress'   => '10830 Composite Dr,
+Dallas, TX 75220',
         'addressLocality' => 'Carrollton',
         'addressRegion'   => 'TX',
         'postalCode'      => '75006',

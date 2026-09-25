@@ -109,9 +109,9 @@
     # =========================
     # 1.5 Dynamic SEO feeds (sitemap / rss / atom)
     # =========================
-    RewriteRule ^sitemap\.xml$ sitemap.php [L]
-    RewriteRule ^rss\.xml$     rss.php     [L]
-    RewriteRule ^atom\.xml$    atom.php    [L]
+    RewriteRule ^sitemap\.xml$ sitemap.php [L,NC]
+    RewriteRule ^rss\.xml$     rss.php     [L,NC]
+    RewriteRule ^atom\.xml$    atom.php    [L,NC]
 
     # =========================
     # 2. Let real files / folders pass through untouched
@@ -126,6 +126,11 @@
     # =========================
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.+)/$ /$1 [L,R=301]
+
+    # =========================
+    # 3.5 Canonical homepage — /Home redirects to /
+    # =========================
+    RewriteRule ^Home/?$ / [R=301,L]
 
     # =========================
     # 4. Blog article routing: /newsdetail/<slug>  ->  pages/newsdetail.php?slug=...

@@ -38,16 +38,9 @@ if ($attempts['count'] >= MAX_ATTEMPTS) {
 }
 
 /* ── Input validation ──────────────────────────────────────── */
-$email        = trim((string)($_POST['email'] ?? ''));
-$password     = (string)($_POST['password'] ?? '');
-$remember     = !empty($_POST['rememberMe']);
-$account_type = $_POST['account_type'] ?? '';
-
-if (!in_array($account_type, ['user', 'company'], true)) {
-    $_SESSION['login_error'] = 'Invalid account type.';
-    header('Location: ../auth-login-minimal.php');
-    exit;
-}
+$email    = trim((string)($_POST['email'] ?? ''));
+$password = (string)($_POST['password'] ?? '');
+$remember = !empty($_POST['rememberMe']);
 
 if ($email === '' || $password === '') {
     $_SESSION['login_error'] = 'Please enter both email and password.';
@@ -64,26 +57,32 @@ $fail = function (string $msg) use (&$attempts) {
     exit;
 };
 
-/* ── Admin login ───────────────────────────────────────────── */
-if ($account_type === 'user') {
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->execute([$email]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+/* ── Admin / employee login — auto-detected by email, no manual type picker ── */
+$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user || !password_verify($password, $user['password'])) {
+if ($user) {
+    if (!password_verify($password, $user['password'])) {
         $fail('Incorrect email or password.');
+    }
+
+    if (($user['status'] ?? 'Active') !== 'Active') {
+        $fail('Your account has been deactivated. Please contact your administrator.');
     }
 
     // Success — regenerate session & populate
     session_regenerate_id(true);
     unset($_SESSION['login_attempts'], $_SESSION['login_error']);
 
-    $_SESSION['user_id']   = $user['id'];
-    $_SESSION['email']     = $user['email'];
-    $_SESSION['username']  = $user['username'];
-    $_SESSION['fullname']  = $user['fullname'];
-    $_SESSION['user_type'] = 'user';
-    $_SESSION['logged_in'] = true;
+    $_SESSION['user_id']     = $user['id'];
+    $_SESSION['email']       = $user['email'];
+    $_SESSION['username']    = $user['username'];
+    $_SESSION['fullname']    = $user['fullname'];
+    $_SESSION['designation'] = $user['designation'];
+    $_SESSION['user_type']   = 'user';
+    $_SESSION['role']        = $user['role'];
+    $_SESSION['logged_in']   = true;
 
     if ($remember) {
         $token = bin2hex(random_bytes(16));

@@ -56,7 +56,7 @@ include __DIR__ . '/includes/head.php';
                 </div>
             </div>
 
-            <div class="card" style="padding:16px;">
+            <div class="card calendar-card" style="padding:16px;">
                 <div class="calendar-legend" style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;font-size:12px;">
                     <?php foreach (JobScheduleRepository::EVENT_TYPES as $k => $label):
                         $color = JobScheduleRepository::eventColor($k);
@@ -110,6 +110,9 @@ include __DIR__ . '/includes/head.php';
                     </div>
 
                     <div class="modal-footer pl-modal-footer">
+                        <button type="button" class="btn text-danger" id="evDeleteBtn">
+                            <i class='bx bx-trash'></i> Delete Event
+                        </button>
                         <button type="button" class="btn btn-default" data-bs-dismiss="modal">Close</button>
                         <a href="#" id="evOpenOrder" class="btn btn-primary">
                             <i class='bx bx-link-external'></i> Open Order
@@ -198,6 +201,30 @@ include __DIR__ . '/includes/head.php';
                 color: var(--text);
                 line-height: 1.5;
             }
+
+            /* ── Calendar mobile fixes ─────────────────────────── */
+            @media (max-width: 640px) {
+                .calendar-card { padding: 10px !important; }
+                .calendar-legend { font-size: 10.5px !important; gap: 8px !important; margin-bottom: 10px !important; }
+                .fc .fc-toolbar {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+                .fc .fc-toolbar-chunk { display: flex; justify-content: center; }
+                .fc .fc-toolbar-title { font-size: 15px; }
+                .fc .fc-button {
+                    padding: 4px 8px;
+                    font-size: 11.5px;
+                }
+                .fc .fc-daygrid-day-number { font-size: 10.5px; padding: 2px 4px; }
+                .fc .fc-daygrid-day-top { flex-direction: row; }
+                .fc .fc-event-title, .fc .fc-event-time { font-size: 9.5px; }
+                .fc .fc-daygrid-event { margin-top: 1px; }
+                .fc-daygrid-dot-event .fc-event-title { font-weight: 500; }
+                .fc .fc-col-header-cell-cushion { font-size: 10.5px; }
+                .fc .fc-list-event-title, .fc .fc-list-event-time { font-size: 12px; }
+                .fc .fc-list-day-text, .fc .fc-list-day-side-text { font-size: 12px; }
+            }
         </style>
 
         <?php include __DIR__ . '/includes/footer.php'; ?>
@@ -208,6 +235,33 @@ include __DIR__ . '/includes/head.php';
         (function () {
             const events = <?= json_encode($fcEvents, JSON_UNESCAPED_SLASHES) ?>;
             const el = document.getElementById('calendar');
+            let currentEvent = null;
+            const el2 = document.getElementById('evDeleteBtn');
+            el2.addEventListener('click', async () => {
+                if (!currentEvent) return;
+                const ok = await confirmDialog({
+                    title: 'Delete event?',
+                    message: 'This scheduled event will be permanently removed from the calendar.',
+                    confirmText: 'Delete event',
+                    icon: 'bx-trash',
+                });
+                if (!ok) return;
+                const fd = new FormData();
+                fd.append('action', 'delete');
+                fd.append('id', currentEvent.id);
+                try {
+                    const res  = await fetch('../auth/schedule.php', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('eventModal'))?.hide();
+                        currentEvent.remove();
+                        currentEvent = null;
+                        showToast('Event deleted.', 'success');
+                    } else {
+                        showToast(data.message || 'Failed to delete event.', 'error');
+                    }
+                } catch { showToast('Network error.', 'error'); }
+            });
             const cal = new FullCalendar.Calendar(el, {
                 initialView: 'dayGridMonth',
                 height: 'auto',
@@ -218,6 +272,7 @@ include __DIR__ . '/includes/head.php';
                 },
                 events,
                 eventClick: (info) => {
+                    currentEvent = info.event;
                     const p = info.event.extendedProps;
                     const color = info.event.backgroundColor || '#3b82f6';
                     const icons = {

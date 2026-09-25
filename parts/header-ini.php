@@ -11,7 +11,7 @@ $pagesContent = [
         'title' => 'Texas Specialized Quartz | Premium Countertops in TX',
         'description' => 'Texas Specialized Quartz offers premium granite, quartz & marble countertops across Texas. Expert fabrication, fast installation & free estimates. Call today!',
         'keywords' => 'Texas quartz countertops, granite countertops Texas, marble countertops TX, custom countertops Texas, kitchen countertops near me, bathroom countertops Texas, countertop installation Texas, stone fabrication TX, affordable quartz countertops, premium stone surfaces Texas',
-        'url' => 'https://texasspecializedquartz.com/Home',
+        'url' => 'https://texasspecializedquartz.com/',
         'og_type' => 'website'
     ],
 
@@ -66,6 +66,13 @@ $pagesContent = [
         'description' => 'Texas Specialized Quartz & Granite serves 40+ cities across Texas — Dallas, Plano, Frisco, Fort Worth, Houston, Austin & more. Free in-home measurement. Same-week install.',
         'keywords' => 'countertop service areas Texas, granite installation Dallas Fort Worth, quartz countertops DFW, countertop fabricator Plano Frisco, stone countertops Texas cities, granite installer near me, Texas countertop coverage, countertop company serving Texas',
         'url' => 'https://texasspecializedquartz.com/service-areas',
+        'og_type' => 'website'
+    ],
+    'lp' => [
+        'title' => 'Free Countertop Quote — Granite, Quartz &amp; Marble | Texas Specialized Quartz',
+        'description' => 'Get your free countertop quote today. Granite, quartz, marble & quartzite — same-week installation across DFW. Lifetime craftsmanship warranty. Call (469) 814-0555.',
+        'keywords' => 'free countertop quote Texas, granite countertops Dallas free estimate, quartz installation Plano, marble countertops Frisco, custom countertops near me, countertop financing Texas',
+        'url' => 'https://texasspecializedquartz.com/lp',
         'og_type' => 'website'
     ],
     'EdgeType' => [

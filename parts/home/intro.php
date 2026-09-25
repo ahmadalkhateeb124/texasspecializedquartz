@@ -5,14 +5,15 @@
                 <figure>
                     <div class="pattern-bg" data-stellar-ratio="1.07"></div>
                     <div class="holder" data-stellar-ratio="1.10">
-                        <img src="images/Granit-Img/fadeInUp1.png"
-                            alt="Professional granite countertop fabrication and installation at Texas Specialized Quartz workshop"
-                            width="600" height="400"
-                            loading="lazy">
+                        <video class="intro-video"
+                               autoplay muted loop playsinline preload="auto"
+                               width="600" height="400"
+                               aria-label="Granite countertop fabrication and installation at Texas Specialized Quartz workshop">
+                            <source src="images/Granit-Img/about.mp4" type="video/mp4">
+                        </video>
                     </div>
                 </figure>
             </div>
-
             <div class="col-lg-6 wow fadeInUp mt-4">
                 <div class="content">
                     <h2>
@@ -41,3 +42,17 @@
         </div>
     </div>
 </section>
+
+<style>
+.intro .holder .intro-video {
+    width: 100%;
+    height: 800px;          /* عدّل الرقم حسب ما بدك */
+    display: block;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (max-width: 991px) {
+    .intro .holder .intro-video { height: 400px; }
+}
+</style>

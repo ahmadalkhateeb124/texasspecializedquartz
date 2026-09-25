@@ -7,18 +7,20 @@
  *
  * Session contract (set by auth/login.php):
  *   $_SESSION['logged_in']   = true
- *   $_SESSION['user_type']   = 'user'    (admin) | 'account' (customer)
- *   $_SESSION['user_id']     = int       (admin only)
+ *   $_SESSION['user_type']   = 'user'    (admin or employee) | 'account' (customer)
+ *   $_SESSION['role']        = 'admin' | 'employee'   (only when user_type === 'user')
+ *   $_SESSION['user_id']     = int       (admin/employee only)
  *   $_SESSION['account_id']  = int       (customer only)
  *   $_SESSION['company_id']  = int       (customer only)
  *   $_SESSION['email']       = string
- *   $_SESSION['fullname']    = string    (admin)
+ *   $_SESSION['fullname']    = string    (admin/employee)
  *   $_SESSION['account_name']= string    (customer)
  *
  * Usage in any page:
  *   require_once __DIR__ . '/../includes/auth.php';   // adjust depth
  *   requireLogin();      // any logged-in user
  *   requireAdmin();      // admin only
+ *   requireEmployee();   // employee only
  *   requireCustomer();   // customer only
  */
 
@@ -34,10 +36,20 @@ function isLoggedIn(): bool
     return !empty($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 }
 
-/** Returns true if the logged-in user is an admin (user_type = 'user'). */
+/** Returns true if the logged-in user is an admin (user_type = 'user', role = 'admin'). */
 function isAdmin(): bool
 {
-    return isLoggedIn() && (($_SESSION['user_type'] ?? '') === 'user');
+    return isLoggedIn()
+        && (($_SESSION['user_type'] ?? '') === 'user')
+        && (($_SESSION['role'] ?? 'admin') === 'admin');
+}
+
+/** Returns true if the logged-in user is an employee (user_type = 'user', role = 'employee'). */
+function isEmployee(): bool
+{
+    return isLoggedIn()
+        && (($_SESSION['user_type'] ?? '') === 'user')
+        && (($_SESSION['role'] ?? '') === 'employee');
 }
 
 /** Returns true if the logged-in user is a customer (user_type = 'account'). */
@@ -70,6 +82,33 @@ function requireAdmin(?string $loginUrl = null): void
 
     if (!isAdmin()) {
         _redirect($loginUrl ?? _loginUrl());
+    }
+}
+
+/**
+ * Allow only employee users. Redirects everyone else to login.
+ */
+function requireEmployee(?string $loginUrl = null): void
+{
+    requireLogin($loginUrl);
+
+    if (!isEmployee()) {
+        _redirect($loginUrl ?? _loginUrl());
+    }
+
+    // Check employee status
+    $userId = $_SESSION['user_id'] ?? 0;
+    if ($userId > 0) {
+        global $pdo;
+        $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $employee = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($employee && $employee['status'] !== 'Active') {
+            $_SESSION['login_error'] = 'Your account has been deactivated. Please contact your administrator.';
+            session_destroy();
+            _redirect($loginUrl ?? _loginUrl());
+        }
     }
 }
 
@@ -124,6 +163,17 @@ function currentUser(): array
             'email'  => $_SESSION['email']     ?? '',
             'role'   => 'admin',
             'avatar' => $_SESSION['avatar']    ?? null,
+        ];
+    }
+
+    if (isEmployee()) {
+        return [
+            'id'          => (int) ($_SESSION['user_id'] ?? 0),
+            'name'        => $_SESSION['fullname']  ?? $_SESSION['username'] ?? 'Employee',
+            'email'       => $_SESSION['email']     ?? '',
+            'designation' => $_SESSION['designation'] ?? '',
+            'role'        => 'employee',
+            'avatar'      => $_SESSION['avatar']    ?? null,
         ];
     }
 

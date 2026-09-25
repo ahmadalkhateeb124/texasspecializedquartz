@@ -111,7 +111,7 @@ include __DIR__ . '/includes/head.php';
             }
             .inbox-avatar {
                 width:40px; height:40px; border-radius:50%;
-                background:#8b6f4e; color:#fff;
+                background:#000000; color:#fff;
                 display:flex; align-items:center; justify-content:center;
                 font-size:13px; font-weight:700; flex-shrink:0;
             }

@@ -218,37 +218,6 @@ if (isset($_SESSION['login_error'])) {
             margin-bottom: 32px;
         }
 
-        /* ── Account type tabs ── */
-        .type-tabs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            background: var(--bg);
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 24px;
-        }
-        .type-tabs input { display: none; }
-        .type-tabs label {
-            text-align: center;
-            padding: 9px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-sub);
-            border-radius: 7px;
-            cursor: pointer;
-            transition: all .18s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .type-tabs input:checked + label {
-            background: var(--text);
-            color: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,.08);
-        }
-
         .form-group {
             margin-bottom: 18px;
         }
@@ -363,6 +332,21 @@ if (isset($_SESSION['login_error'])) {
             align-items: flex-start;
         }
 
+        .unified-note {
+            padding: 12px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            border-radius: 10px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+        }
+        .unified-note i { font-size: 15px; flex-shrink: 0; margin-top: 1px; color: #000000; }
+
         .form-footer {
             position: absolute;
             bottom: 32px;
@@ -378,14 +362,11 @@ if (isset($_SESSION['login_error'])) {
 
         /* ── Responsive ── */
         @media (max-width: 900px) {
-            .split { grid-template-columns: 1fr; }
-            .brand-panel {
-                padding: 40px 32px;
-                min-height: 320px;
-            }
-            .brand-footer { display: none; }
+            .split { grid-template-columns: 1fr; min-height: auto; align-content: start; }
+            .brand-panel { display: none; }
             .form-panel {
                 padding: 40px 24px 80px;
+                min-height: 100vh;
             }
             .lang-switch { top: 16px; right: 16px; }
             .form-footer { left: 24px; right: 24px; bottom: 20px; }
@@ -422,7 +403,7 @@ if (isset($_SESSION['login_error'])) {
 
             <div class="brand-footer">
                 <span>© <?= date('Y') ?> Texas Specialized Quartz &amp; Granite</span>
-                <span>v1.0</span>
+                <span>v1.1</span>
             </div>
         </aside>
 
@@ -438,6 +419,12 @@ if (isset($_SESSION['login_error'])) {
                 <h2 class="form-heading">Welcome back</h2>
                 <p class="form-sub">Sign in to your management dashboard</p>
 
+                <!-- TEMP: remove once everyone's used to the unified login (no more separate tabs) -->
+                <div class="unified-note">
+                    <i class='bx bx-info-circle'></i>
+                    One sign-in for everyone customers, employees, and admins all log in here. We'll detect your account automatically.
+                </div>
+
                 <?php if ($error): ?>
                     <div class="alert-error">
                         <i class='bx bx-error-circle' style="font-size:16px;flex-shrink:0;margin-top:1px;"></i>
@@ -445,20 +432,7 @@ if (isset($_SESSION['login_error'])) {
                     </div>
                 <?php endif; ?>
 
-                <!-- Account type tabs -->
-                <div class="type-tabs">
-                    <input type="radio" name="account_type_ui" id="type_admin" value="user" checked>
-                    <label for="type_admin">
-                        <i class='bx bx-shield-quarter'></i> Admin
-                    </label>
-                    <input type="radio" name="account_type_ui" id="type_company" value="company">
-                    <label for="type_company">
-                        <i class='bx bx-buildings'></i> Customer
-                    </label>
-                </div>
-
                 <form action="auth/login.php" method="POST" id="loginForm">
-                    <input type="hidden" name="account_type" id="accountTypeInput" value="user">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken()) ?>">
 
                     <div class="form-group">
@@ -472,7 +446,6 @@ if (isset($_SESSION['login_error'])) {
                     <div class="form-group">
                         <label class="form-label" for="password">
                             Password
-                            <a href="#" onclick="return false;">Forgot password?</a>
                         </label>
                         <div class="input-wrap">
                             <input type="password" name="password" id="password" class="form-control"
@@ -503,13 +476,6 @@ if (isset($_SESSION['login_error'])) {
     </div>
 
     <script>
-        // Type switcher
-        document.querySelectorAll('input[name="account_type_ui"]').forEach(radio => {
-            radio.addEventListener('change', () => {
-                document.getElementById('accountTypeInput').value = radio.value;
-            });
-        });
-
         // Password toggle
         function togglePwd() {
             const inp = document.getElementById('password');

@@ -1,10 +1,20 @@
-<?php /** Expects $job_sections */ ?>
+<?php /** Expects $job_sections, $order */ ?>
 <?php if (empty($job_sections)): ?>
-    <div class="card">
-        <div class="empty-state">
-            <div class="empty-state-icon"><i class='bx bx-layer'></i></div>
-            <p class="empty-state-title">No job sections</p>
-            <p class="empty-state-desc">This order has no job sections attached.</p>
+    <div class="card" style="border:1px solid #ffd29a;background:#fff7eb;">
+        <div class="empty-state" style="padding:32px 20px;">
+            <div class="empty-state-icon" style="color:#b56a00;"><i class='bx bx-error-circle'></i></div>
+            <p class="empty-state-title" style="color:#b56a00;">Order missing job details</p>
+            <p class="empty-state-desc">
+                This order was submitted <strong>without selecting any job area</strong>
+                (Kitchen, Bathroom, Master Bath, Other), so no material/edge/sink
+                information is attached. Edit the order to add the missing details
+                before fabrication.
+            </p>
+            <?php if (function_exists('isAdmin') && isAdmin() && !empty($order['id'])): ?>
+                <a href="order-edit?id=<?= (int)$order['id'] ?>" class="btn btn-primary btn-sm mt-2">
+                    <i class='bx bx-edit'></i> Edit order to add details
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 <?php else: ?>
@@ -105,6 +115,174 @@
                         </div>
                     </div>
                 </div>
+
+                <?php if (function_exists('isAdmin') && isAdmin()): ?>
+                    <div class="mt-3 pt-3" style="border-top:1px dashed var(--color-border, #e5e0d8);">
+                        <div style="font-size:12px;font-weight:600;color:var(--color-text-sub);margin-bottom:6px;">
+                            <i class='bx bx-calendar'></i> Schedule
+                        </div>
+                        <?php if (empty($job['schedule_events'])): ?>
+                            <p style="font-size:13px;color:var(--color-text-sub);margin:0;">No events scheduled yet.</p>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Date &amp; Time</th>
+                                            <th>Status</th>
+                                            <th>Notes</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($job['schedule_events'] as $e):
+                                            $color = JobScheduleRepository::eventColor($e['event_type']);
+                                        ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="badge" style="background:<?= $color ?>;color:#fff;">
+                                                        <?= JobScheduleRepository::EVENT_TYPES[$e['event_type']] ?? $e['event_type'] ?>
+                                                    </span>
+                                                </td>
+                                                <td><?= date('M j, Y g:i A', strtotime($e['scheduled_date'])) ?></td>
+                                                <td><?= JobScheduleRepository::statusBadge($e['status']) ?></td>
+                                                <td style="max-width:200px;"><?= htmlspecialchars($e['notes'] ?? '') ?></td>
+                                                <td class="text-end">
+                                                    <button class="btn btn-icon btn-sm btn-outline edit-event-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#adminScheduleModal"
+                                                        data-id="<?= (int)$e['id'] ?>"
+                                                        data-event-type="<?= htmlspecialchars($e['event_type']) ?>"
+                                                        data-scheduled-date="<?= htmlspecialchars(str_replace(' ', 'T', substr($e['scheduled_date'], 0, 16))) ?>"
+                                                        data-status="<?= htmlspecialchars($e['status']) ?>"
+                                                        data-notes="<?= htmlspecialchars($e['notes'] ?? '', ENT_QUOTES) ?>"
+                                                        title="Edit">
+                                                        <i class='bx bx-edit'></i>
+                                                    </button>
+                                                    <button class="btn btn-icon btn-sm btn-outline text-danger delete-event-btn"
+                                                        data-id="<?= (int)$e['id'] ?>" title="Delete">
+                                                        <i class='bx bx-trash'></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php elseif (function_exists('isEmployee') && isEmployee()): ?>
+                    <?php $orderLocked = ($order['admin_status'] ?? '') === 'completed'; ?>
+                    <div class="mt-3 pt-3" style="border-top:1px dashed var(--color-border, #e5e0d8);">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div style="font-size:12px;font-weight:600;color:var(--color-text-sub);">
+                                <i class='bx bx-calendar'></i> Schedule
+                            </div>
+                            <?php if (!$orderLocked): ?>
+                                <button type="button" class="btn btn-sm btn-primary"
+                                    data-bs-toggle="modal" data-bs-target="#employeeScheduleModal"
+                                    data-mode="create"
+                                    data-job-section-id="<?= (int)$job['id'] ?>">
+                                    <i class='bx bx-plus'></i> Add Event
+                                </button>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php if (empty($job['schedule_events'])): ?>
+                            <p style="font-size:13px;color:var(--color-text-sub);margin:0;">No events scheduled yet.</p>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Date &amp; Time</th>
+                                            <th>Status</th>
+                                            <th>Notes</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($job['schedule_events'] as $e):
+                                            $color = JobScheduleRepository::eventColor($e['event_type']);
+                                        ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="badge" style="background:<?= $color ?>;color:#fff;">
+                                                        <?= JobScheduleRepository::EVENT_TYPES[$e['event_type']] ?? $e['event_type'] ?>
+                                                    </span>
+                                                </td>
+                                                <td><?= date('M j, Y g:i A', strtotime($e['scheduled_date'])) ?></td>
+                                                <td><?= JobScheduleRepository::statusBadge($e['status']) ?></td>
+                                                <td style="max-width:200px;"><?= htmlspecialchars($e['notes'] ?? '') ?></td>
+                                                <td class="text-end">
+                                                    <?php if (!$orderLocked): ?>
+                                                        <button class="btn btn-icon btn-sm btn-outline edit-event-btn"
+                                                            data-bs-toggle="modal" data-bs-target="#employeeScheduleModal"
+                                                            data-mode="edit"
+                                                            data-id="<?= (int)$e['id'] ?>"
+                                                            data-job-section-id="<?= (int)$job['id'] ?>"
+                                                            data-event-type="<?= htmlspecialchars($e['event_type']) ?>"
+                                                            data-scheduled-date="<?= htmlspecialchars(str_replace(' ', 'T', substr($e['scheduled_date'], 0, 16))) ?>"
+                                                            data-status="<?= htmlspecialchars($e['status']) ?>"
+                                                            data-notes="<?= htmlspecialchars($e['notes'] ?? '', ENT_QUOTES) ?>"
+                                                            title="Edit">
+                                                            <i class='bx bx-edit'></i>
+                                                        </button>
+                                                        <button class="btn btn-icon btn-sm btn-outline text-danger delete-event-btn"
+                                                            data-id="<?= (int)$e['id'] ?>" title="Delete">
+                                                            <i class='bx bx-trash'></i>
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <span style="color:var(--color-text-sub);font-size:12px;">—</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php elseif (function_exists('isCustomer') && isCustomer()): ?>
+                    <div class="mt-3 pt-3" style="border-top:1px dashed var(--color-border, #e5e0d8);">
+                        <div style="font-size:12px;font-weight:600;color:var(--color-text-sub);margin-bottom:6px;">
+                            <i class='bx bx-calendar'></i> Schedule
+                        </div>
+                        <?php if (empty($job['schedule_events'])): ?>
+                            <p style="font-size:13px;color:var(--color-text-sub);margin:0;">No events scheduled yet.</p>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Date &amp; Time</th>
+                                            <th>Status</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($job['schedule_events'] as $e):
+                                            $color = JobScheduleRepository::eventColor($e['event_type']);
+                                        ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="badge" style="background:<?= $color ?>;color:#fff;">
+                                                        <?= JobScheduleRepository::EVENT_TYPES[$e['event_type']] ?? $e['event_type'] ?>
+                                                    </span>
+                                                </td>
+                                                <td><?= date('M j, Y g:i A', strtotime($e['scheduled_date'])) ?></td>
+                                                <td><?= JobScheduleRepository::statusBadge($e['status']) ?></td>
+                                                <td style="max-width:220px;"><?= htmlspecialchars($e['notes'] ?? '') ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     <?php endforeach; ?>

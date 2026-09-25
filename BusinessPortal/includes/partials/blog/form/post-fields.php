@@ -86,7 +86,7 @@ $v = fn(string $k): string => htmlspecialchars($p[$k] ?? '');
             </div>
             <div class="card-section">
                 <?php if ($hasImage): ?>
-                    <img id="coverPreview" src="/texasspecializedquartz/<?= htmlspecialchars(ltrim($p['image'], '/')) ?>"
+                    <img id="coverPreview" src="<?= htmlspecialchars(site_asset(ltrim($p['image'], '/'))) ?>"
                         style="width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:10px;">
                 <?php else: ?>
                     <img id="coverPreview" src="" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-bottom:10px;">

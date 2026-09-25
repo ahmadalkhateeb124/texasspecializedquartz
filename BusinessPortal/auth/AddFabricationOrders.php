@@ -62,6 +62,9 @@ if (!$input['customer_name']) $errors[] = 'Customer name is required';
 if (!$input['phone'])         $errors[] = 'Phone number is required';
 if (!$input['address'])       $errors[] = 'Address is required';
 if (!$input['city'])          $errors[] = 'City is required';
+if (empty($_POST['job_types']) || !is_array($_POST['job_types'])) {
+    $errors[] = 'Select at least one job area (Kitchen, Bathroom, etc.) and fill in its details.';
+}
 
 if ($errors) {
     $response['message'] = 'Validation failed';
@@ -143,24 +146,79 @@ $mailConfig = require __DIR__ . '/../config/mail.php';
 $email = ['success' => false, 'debug' => ['skipped' => 'mail disabled']];
 
 if (!empty($mailConfig['enabled'])) {
-    $built = OrderEmailBuilder::build(
-        array_merge($input, ['id' => $orderId, 'user_email' => $senderEmail, 'user_fullname' => $senderName]),
-        $jobs,
-        $uploaded ? ['name' => $uploaded['original_name'], 'path' => $uploaded['full_path']] : null
-    );
+    if (empty($mailConfig['password'])) {
+        Logger::error('order.mail.no_password', [
+            'order_id'    => $orderId,
+            'config_file' => is_file(__DIR__ . '/../config/mail.credentials.php') ? 'found' : 'MISSING',
+        ]);
+        $email = ['success' => false, 'debug' => ['error' => 'SMTP password is empty']];
+    } else {
+        $built = OrderEmailBuilder::build(
+            array_merge($input, [
+                'id' => $orderId,
+                'user_email' => $senderEmail,
+                'user_fullname' => $senderName
+            ]),
+            $jobs,
+            $uploaded ? [
+                'name' => $uploaded['original_name'],
+                'path' => $uploaded['full_path']
+            ] : null
+        );
 
-    $mailer = new Mailer($mailConfig);
-    $email = $mailer->send(
-        $mailConfig['admin_email'],
-        $built['subject'],
-        $built['body'],
-        [
-            'reply_to_email'  => $senderEmail,
-            'reply_to_name'   => $senderName,
-            'attachment_path' => $uploaded['full_path']     ?? '',
-            'attachment_name' => $uploaded['original_name'] ?? '',
-        ]
-    );
+        $mailer = new Mailer($mailConfig);
+
+        // 👇 الإيميلات الخاصة بالأوردر فقط
+        $emails = [
+            $mailConfig['admin_email'], // الأساسي
+            'jay@texasspecializedquartz.com' // الإيميل الثاني
+        ];
+
+        $results = [];
+
+        foreach ($emails as $to) {
+            $result = $mailer->send(
+                $to,
+                $built['subject'],
+                $built['body'],
+                [
+                    'reply_to_email'  => $senderEmail,
+                    'reply_to_name'   => $senderName,
+                    'attachment_path' => $uploaded['full_path']     ?? '',
+                    'attachment_name' => $uploaded['original_name'] ?? '',
+                ]
+            );
+
+            $results[] = $result;
+        }
+
+        // تحقق إذا كل الإيميلات انرسلت
+        $emailSuccess = true;
+        foreach ($results as $r) {
+            if (!$r['success']) {
+                $emailSuccess = false;
+                break;
+            }
+        }
+
+        $email = [
+            'success' => $emailSuccess,
+            'debug'   => $results
+        ];
+
+        if (!$emailSuccess) {
+            Logger::error('order.mail.failed', [
+                'order_id' => $orderId,
+                'to'       => $emails,
+                'debug'    => $results,
+            ]);
+        } else {
+            Logger::info('order.mail.sent', [
+                'order_id' => $orderId,
+                'to'       => $emails,
+            ]);
+        }
+    }
 }
 
 $response['success']     = true;

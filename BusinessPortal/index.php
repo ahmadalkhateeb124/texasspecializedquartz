@@ -10,6 +10,11 @@ if (isAdmin()) {
     exit;
 }
 
+if (isEmployee()) {
+    header('Location: employee/index.php');
+    exit;
+}
+
 if (isCustomer()) {
     header('Location: customer/index.php');
     exit;

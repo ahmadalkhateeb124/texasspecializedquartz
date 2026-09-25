@@ -95,7 +95,8 @@
         <div class="row mt-5 mb-5">
             <div class="col-12 text-center">
                 <h3>Have More Questions About Kitchen Countertops in Dallas–Fort Worth?</h3>
-                <p>Our stone experts are available Monday–Saturday. Call <a style="color:#9f8054;" href="tel:+14698140555"><strong>(469) 814-0555</strong></a> or visit our Plano showroom for a hands-on consultation.</p>
+                <p>Our stone experts are available Monday–Saturday. Call <a style="color:#9f8054;" href="tel:+14698140555"><strong>(469) 814-0555</strong></a> or visit our 10830 Composite Dr,
+Dallas, TX 75220 for a hands-on consultation.</p>
                 <a href="<?= $base_url ?>contact" class="btn btn-primary btn-lg">Ask Our Experts</a>
             </div>
         </div>

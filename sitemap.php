@@ -11,7 +11,6 @@ $base = rtrim(setting('seo_canonical_base', 'https://texasspecializedquartz.com'
 
 $staticPages = [
     ['',                     'daily',   '1.0'],
-    ['Home',                 'daily',   '1.0'],
     ['KitchenCountertops',   'weekly',  '0.95'],
     ['Services',             'monthly', '0.95'],
     ['InstallationServices', 'monthly', '0.90'],

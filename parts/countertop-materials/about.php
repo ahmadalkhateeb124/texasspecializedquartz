@@ -65,10 +65,14 @@
                 <p><strong>Best for:</strong> Homeowners and designers seeking a one-of-a-kind surface — accent walls, custom dining tables, reception desks, bar tops, and architectural features.</p>
             </div>
 
-            <div class="col-md-12">
-                <h3>Not Sure Which Countertop Material Is Right for You?</h3>
-                <p>Choosing between granite, quartz, marble, and quartzite depends on your lifestyle, design preferences, budget, and how you use your space. Our stone experts provide <strong>free, no-pressure consultations</strong> — either at our <strong>Plano, TX showroom</strong> or via a complimentary in-home visit — to help you compare materials, see full-size slabs, and get an all-inclusive quote. We carry over <strong>300,000 premium stone slabs</strong> and can source virtually any stone on the market.</p>
-            </div>
+         <div class="col-md-12">
+    <h3>Not Sure Which Countertop Material Is Right for You?</h3>
+    <p>
+        Choosing between granite, quartz, marble, and quartzite depends on your lifestyle, design preferences, budget, and how you use your space. 
+        Our stone experts offer <strong>free, no-pressure consultations</strong> — including <strong>in-home visits</strong> — to help you compare materials, view full-size slabs, and receive a clear, all-inclusive quote. 
+        We carry over <strong>300,000 premium stone slabs</strong> and can source virtually any material on the market.
+    </p>
+</div>
 
             <div class="col-12">
                 <blockquote>

@@ -36,7 +36,8 @@ require('header-ini.php');
     <meta property="og:image:height" content="630">
     <!-- Robots -->
     <meta http-equiv="Cache-Control" content="public, max-age=604800, immutable">
-    <meta name="robots" content="index, follow">
+    <?php $_noindexPages = ['lp', 'thank-you', 'B', 'M']; ?>
+    <meta name="robots" content="<?= in_array($requestUrl ?? '', $_noindexPages) ? 'noindex, nofollow' : 'index, follow' ?>">
     <!-- Twitter -->
     <?php $tw = setting('social_twitter_handle', '@graniteartists'); ?>
     <meta name="twitter:card" content="summary_large_image">
@@ -51,6 +52,7 @@ require('header-ini.php');
     <link href="<?= $base_url ?>images/Granit-Img/logo-gg.jpg" rel="apple-touch-icon" sizes="72x72">
     <link href="<?= $base_url ?>images/Granit-Img/logo-gg.jpg" rel="apple-touch-icon">
     <link href="<?= $base_url ?>images/Granit-Img/logo-gg.jpg" rel="shortcut icon">
+    <link rel="preload" as="video" href="/images/Granit-Img/hero.mp4" type="video/mp4">
     <!-- Critical CSS -->
     <link rel="stylesheet" href="<?= $base_url ?>css/bootstrap.min.css">
     <link rel="stylesheet" href="<?= $base_url ?>css/theme-2026.css">
@@ -124,8 +126,16 @@ require('header-ini.php');
     }(window, document, 'ttq');
     </script>
     <?php endif; ?>
+
 </head>
 
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5HGBN8ML');</script>
+<!-- End Google Tag Manager -->
 <?php $txIsHome = in_array(basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), ['', 'Home', 'index.php'], true); ?>
 <body class="tx-theme <?= $txIsHome ? 'tx-home' : '' ?>">
 
@@ -156,13 +166,14 @@ require('header-ini.php');
             <a href="<?= createLink($base_url, 'Home') ?>" class="tx-link">Home</a>
             <a href="<?= createLink($base_url, 'Inventory') ?>" class="tx-link">Inventory</a>
             <a href="<?= createLink($base_url, 'Sinks') ?>" class="tx-link">Sinks</a>
+         <a href="<?= createLink($base_url, 'EdgeType') ?>" class="tx-link">Edge Types</a>
             <div class="tx-drop">
                 <a href="#" class="tx-link tx-drop-toggle">Countertops</a>
                 <ul class="tx-drop-menu">
                     <li><a href="<?= createLink($base_url, 'CountertopMaterials') ?>">Granite Countertops</a></li>
                     <li><a href="<?= createLink($base_url, 'KitchenCountertops') ?>">Kitchen Countertops</a></li>
                     <li><a href="<?= createLink($base_url, 'Countertops') ?>">All Countertops</a></li>
-                    <li><a href="<?= createLink($base_url, 'EdgeType') ?>">Edge Types</a></li>
+                    
                 </ul>
             </div>
             <div class="tx-drop">
@@ -182,13 +193,15 @@ require('header-ini.php');
 
         <div class="tx-nav-right">
             <a href="<?= createLink($base_url, 'Remnants') ?>" class="tx-link">Remnants</a>
-            <a href="<?= createLink($base_url, 'about') ?>" class="tx-link">About</a>
+            
+                      <a href="<?= createLink($base_url, 'photogallery') ?>"  class="tx-link" > Project</a>
+
             <div class="tx-drop">
                 <a href="#" class="tx-link tx-drop-toggle">Company</a>
                 <ul class="tx-drop-menu">
                     <li><a href="<?= createLink($base_url, 'Services') ?>">Services</a></li>
                     <li><a href="<?= createLink($base_url, 'InstallationServices') ?>">Installation</a></li>
-                    <li><a href="<?= createLink($base_url, 'photogallery') ?>">Gallery</a></li>
+                     <li><a href="<?= createLink($base_url, 'about') ?>">About</a></li>
                     <li><a href="<?= createLink($base_url, 'faq') ?>">FAQ</a></li>
                     <li><a href="<?= createLink($base_url, 'certificates') ?>">Certificates</a></li>
                 </ul>
@@ -209,13 +222,14 @@ require('header-ini.php');
             <li><a href="<?= createLink($base_url, 'Home') ?>">Home</a></li>
             <li><a href="<?= createLink($base_url, 'Inventory') ?>">Inventory</a></li>
             <li><a href="<?= createLink($base_url, 'Sinks') ?>">Sinks</a></li>
+              <li><a href="<?= createLink($base_url, 'EdgeType') ?>">Edge Types</a></li>
             <li class="has-sub">
                 <a href="#">Countertops</a>
                 <ul class="submenu">
                     <li><a href="<?= createLink($base_url, 'CountertopMaterials') ?>">Granite Countertops</a></li>
                     <li><a href="<?= createLink($base_url, 'KitchenCountertops') ?>">Kitchen Countertops</a></li>
                     <li><a href="<?= createLink($base_url, 'Countertops') ?>">All Countertops</a></li>
-                    <li><a href="<?= createLink($base_url, 'EdgeType') ?>">Edge Types</a></li>
+                  
                 </ul>
             </li>
             <li class="has-sub">
@@ -227,13 +241,14 @@ require('header-ini.php');
                 </ul>
             </li>
             <li><a href="<?= createLink($base_url, 'Remnants') ?>">Remnants</a></li>
-            <li><a href="<?= createLink($base_url, 'about') ?>">About</a></li>
+                  <li><a href="<?= createLink($base_url, 'photogallery') ?>">Inspiration Center</a></li>
             <li class="has-sub">
                 <a href="#">Company</a>
                 <ul class="submenu">
                     <li><a href="<?= createLink($base_url, 'Services') ?>">Services</a></li>
                     <li><a href="<?= createLink($base_url, 'InstallationServices') ?>">Installation</a></li>
-                    <li><a href="<?= createLink($base_url, 'photogallery') ?>">Gallery</a></li>
+             
+                     <li><a href="<?= createLink($base_url, 'about') ?>">About</a></li>
                     <li><a href="<?= createLink($base_url, 'faq') ?>">FAQ</a></li>
                     <li><a href="<?= createLink($base_url, 'certificates') ?>">Certificates</a></li>
                 </ul>
