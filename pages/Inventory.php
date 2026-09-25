@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= $base_url ?>css/inventory.css">
+<link rel="stylesheet" href="<?= $base_url ?>css/inventory.css?v=<?= @filemtime(__DIR__ . '/../css/inventory.css') ?: 1 ?>">
 </head>
 <body>
 
