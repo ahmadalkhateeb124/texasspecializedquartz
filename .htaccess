@@ -34,7 +34,7 @@
 # =========================
 # 0.5 Block dotfiles, sensitive files & dangerous extensions
 # =========================
-<FilesMatch "(^\.(?!well-known)|\.(env|env\..*|sql|log|md|lock|json|yml|yaml|ini|conf|sh|bak|old|swp|orig|tpl)$|composer\.(json|lock)$|package(-lock)?\.json$|(database|mail)\.credentials\.php$)">
+<FilesMatch "(^\.(?!well-known)|\.(env|env\..*|sql|log|md|lock|json|yml|yaml|ini|conf|sh|bak|old|swp|orig|tpl)$|composer\.(json|lock)$|package(-lock)?\.json$|(database|mail|migrate)\.credentials\.php$)">
     Require all denied
 </FilesMatch>
 

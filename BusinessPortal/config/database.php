@@ -19,10 +19,11 @@ $pdoOptions = [
 ];
 
 $_dbHost  = $_SERVER['HTTP_HOST'] ?? '';
-$_isLocal = in_array($_dbHost, ['localhost', '127.0.0.1'], true)
-         || str_starts_with($_dbHost, '192.168.')
-         || str_starts_with($_dbHost, '10.')
-         || PHP_SAPI === 'cli';
+$_isLocal = getenv('APP_ENV') !== 'production'   // `php run.php --live` on the server
+         && (in_array($_dbHost, ['localhost', '127.0.0.1'], true)
+             || str_starts_with($_dbHost, '192.168.')
+             || str_starts_with($_dbHost, '10.')
+             || PHP_SAPI === 'cli');
 
 if ($_isLocal) {
     return [

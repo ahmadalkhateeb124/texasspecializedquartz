@@ -5,6 +5,7 @@
 # Secrets — never commit credentials
 BusinessPortal/config/database.credentials.php
 BusinessPortal/config/mail.credentials.php
+BusinessPortal/config/migrate.credentials.php
 .env
 .env.*
 !.env.example
